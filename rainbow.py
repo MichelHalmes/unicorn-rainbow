@@ -16,12 +16,12 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 80     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('violet',   {'offset': 2, 'length': 3, 'is_reverse': False, 'basecolor': (100,50,255)}),
-    ('blue',     {'offset': 2, 'length': 4, 'is_reverse': True, 'basecolor': (0,0,255)}),
-    ('green',    {'offset': 2, 'length': 3, 'is_reverse': False, 'basecolor': (0,255,0)}),
-    ('yellow',   {'offset': 2, 'length': 5, 'is_reverse': True, 'basecolor': (10,155,0)}),
-    ('orange',   {'offset': 2, 'length': 4, 'is_reverse': False, 'basecolor': (128,128,0)}),
-    ('red',      {'offset': 2, 'length': 3, 'is_reverse': True, 'basecolor': (255,0,0)}),    
+    ('violet',   {'offset': 2, 'length': 7, 'is_reverse': False, 'basecolor': (100,50,255)}),
+    ('blue',     {'offset': 2, 'length': 8, 'is_reverse': True, 'basecolor': (0,0,255)}),
+    ('green',    {'offset': 2, 'length': 7, 'is_reverse': False, 'basecolor': (0,255,0)}),
+    ('yellow',   {'offset': 2, 'length': 10, 'is_reverse': True, 'basecolor': (10,155,0)}),
+    ('orange',   {'offset': 2, 'length': 8, 'is_reverse': False, 'basecolor': (128,128,0)}),
+    ('red',      {'offset': 2, 'length': 7, 'is_reverse': True, 'basecolor': (255,0,0)}),    
 ]
                     
 
