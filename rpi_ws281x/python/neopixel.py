@@ -10,7 +10,7 @@ def Color(red, green, blue, white = 0):
 	Each color component should be a value 0-255 where 0 is the lowest intensity
 	and 255 is the highest intensity.
 	"""
-	return (white << 24) | (red << 16)| (green << 8) | blue
+	return (white << 24) | (green << 16)| (red << 8) | blue
 
 
 class _LED_Data(object):
@@ -33,6 +33,8 @@ class _LED_Data(object):
 		else:
 			return ws.ws2811_led_get(self.channel, pos)
 
+	
+
 	def __setitem__(self, pos, value):
 		"""Set the 24-bit RGB color value at the provided position or slice of
 		positions.
@@ -41,7 +43,7 @@ class _LED_Data(object):
 		# LED data values to the provided values.
 		if isinstance(pos, slice):
 			index = 0
-			for n in range(pos.indices(self.size)):
+			for n in range(pos.start, pos.stop):
 				ws.ws2811_led_set(self.channel, n, value[index])
 				index += 1
 		# Else assume the passed in value is a number to the position.
