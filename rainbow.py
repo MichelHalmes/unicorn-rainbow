@@ -77,7 +77,7 @@ class Part(object):
         start = self._start_idx
         end = start + self._length
         if self._is_reverse:
-            strip.setPixelColor(slice(start,end), map(lambda rgb: Color(*rgb), self._leds_rgb.reverse()))
+            strip.setPixelColor(slice(start,end), map(lambda rgb: Color(*rgb), reversed(self._leds_rgb)))
         else:
             strip.setPixelColor(slice(start,end), map(lambda rgb: Color(*rgb), self._leds_rgb))
 
