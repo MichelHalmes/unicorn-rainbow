@@ -51,14 +51,14 @@ class Rainbow(object):
             part.set_uniform_color((0,0,0))
 
     def colorwipe(self):
-        duration_ms = 2
+        duration_ms = 2000
         wait_ms = 50
         nb_steps = int(duration_ms/wait_ms)
         for step in range(nb_steps):
             for part in self._parts:
-                pixel = int(step * part._leds_rgb / nb_steps)
+                pixel = int(step * part._length / nb_steps)
                 part.set_pixel_color(pixel)
-            strip.render_parts()
+            self.render_parts()
             time.sleep(wait_ms/1000.0)
 
 
@@ -69,7 +69,7 @@ class Part(object):
         self._name = name
         self._start_idx = start_idx
         self._length = length
-        self._base_rgb
+        self._base_rgb = base_rgb
         self._leds_rgb = [base_rgb] * length
 
     def render(self, strip):
@@ -92,7 +92,7 @@ class Part(object):
 if __name__ == '__main__':
     rainbow = Rainbow()
     rainbow.render_parts()
-    time.sleep(2)
+    time.sleep(1)
 
     rainbow.reset()
     rainbow.render_parts()
