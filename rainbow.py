@@ -32,7 +32,7 @@ class Rainbow(object):
         start_idx = 0
         for name, parts_dict in RAINBOW_PARTS:
             start_idx += parts_dict['offset']
-            part = Parts(name, start_idx, parts_dict['length'], parts_dict['basecolor'])
+            part = Part(name, start_idx, parts_dict['length'], parts_dict['basecolor'])
             start_idx += parts_dict['length']
             
             self._parts.append(part)
@@ -59,7 +59,7 @@ class Part(object):
     def render(self, strip):
         start = self._start_idx
         end = start + self._length
-        strip.setPixelColor(slice(start,end), map(lambda  rgb: Color(*rgb), self._led_rgbs))
+        strip.setPixelColor(slice(start,end), map(lambda  rgb: Color(*rgb), self._leds_rgb))
 
 
 
