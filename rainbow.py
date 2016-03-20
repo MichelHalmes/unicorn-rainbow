@@ -17,15 +17,15 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 80     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('violet',   {'offset': 2, 'length': 7, 'is_reverse': False, 'basecolor': (100,50,255)}),
-    ('blue',     {'offset': 2, 'length': 8, 'is_reverse': True, 'basecolor': (0,0,255)}),
+    ('violet',   {'offset': 2, 'length': 20, 'is_reverse': False, 'basecolor': (100,50,255)}),
+    ('blue',     {'offset': 2, 'length': 20, 'is_reverse': True, 'basecolor': (0,0,255)}),
     ('green',    {'offset': 2, 'length': 7, 'is_reverse': False, 'basecolor': (0,255,0)}),
     ('yellow',   {'offset': 2, 'length': 10, 'is_reverse': True, 'basecolor': (10,155,0)}),
     ('orange',   {'offset': 2, 'length': 8, 'is_reverse': False, 'basecolor': (128,128,0)}),
     ('red',      {'offset': 2, 'length': 7, 'is_reverse': True, 'basecolor': (255,0,0)}),    
 ]
 
-
+WAIT_MS = 50
                     
 
 class Rainbow(object):
@@ -50,7 +50,7 @@ class Rainbow(object):
            
         self._strip.show()
 
-    WAIT_MS = 50
+    
     def animation(self, anim_func, reset_rgb, duration_ms=2000):
         self._anim_data = {}
         for part in self._parts:
@@ -65,13 +65,15 @@ class Rainbow(object):
             self.render_parts()
             time.sleep(WAIT_MS/1000.0)
 
-    def a_colorwipe(part, part_idx, step, nb_steps): 
+    def a_colorwipe(self, part, part_idx, step, nb_steps): 
         pixel_idx = int(step * part._length / nb_steps)
         part.set_pixel_color(pixel_idx)
             
 
-    def a_commet(part, part_idx, step, nb_steps):
-        if len(part._anim_data == 0):
+    def a_commet(self, part, part_idx, step, nb_steps):
+        if step % 4 != 0:
+            return
+        if len(part._anim_data) == 0:
             start_pixel = random.randint(int(0.1*part._length), int(0.9*part._length))
             part._anim_data = {'left_pix': start_pixel, 'right_pix': start_pixel}
             part.set_pixel_color(start_pixel, (200,200,200))
@@ -135,7 +137,7 @@ if __name__ == '__main__':
     rainbow.render_parts()
     time.sleep(1)
 
-    rainbow.animation(a_colorwipe, (0,0,0))
-    rainbow.animation(a_commet, None)
+    rainbow.animation(rainbow.a_colorwipe, (0,0,0))
+    rainbow.animation(rainbow.a_commet, None, 5000)
 
 
