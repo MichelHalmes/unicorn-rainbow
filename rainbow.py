@@ -13,13 +13,13 @@ from collections import OrderedDict
 def wheel(pos):
     """Generate rainbow colors across 0-255 positions."""
     if pos < 85:
-        return (pos * 3, 255 - pos * 3, 0)
+        return (255 - pos * 3, pos * 3, 0)
     elif pos < 170:
         pos -= 85
-        return (255 - pos * 3, 0, pos * 3)
+        return (0, 255 - pos * 3, pos * 3)
     else:
         pos -= 170
-        return (0, pos * 3, 255 - pos * 3)
+        return (pos * 3, 0, 255 - pos * 3)
 
 RAINBOW_RGB = map(wheel, range(256))
 
@@ -109,7 +109,7 @@ class Rainbow(object):
     def a_gradients(self, part, step):
         RAINBOW_LEN = len(RAINBOW_RGB)
         start_idx = step % RAINBOW_LEN
-        leds_rgb = [RAINBOW_RGB[int(start_idx + (led_idx/part._length)*RAINBOW_LEN)] for led_idx in range(part._length)]
+        leds_rgb = [RAINBOW_RGB[int(start_idx + (led_idx*RAINBOW_LEN/part._length))%RAINBOW_LEN] for led_idx in range(part._length)]
         part.set_leds_rgb(leds_rgb)
        
 
@@ -185,8 +185,8 @@ if __name__ == '__main__':
     time.sleep(1)
 
     rainbow.animation(rainbow.a_gradients, (0,0,0), 4)
-    rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
-    rainbow.animation(rainbow.a_commet, None, 5)
-    rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
+##    rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
+##    rainbow.animation(rainbow.a_commet, None, 5)
+##    rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
 
 
