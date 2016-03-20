@@ -30,7 +30,7 @@ SPEED_MS = 200
 
 NORMAL_STEP_PERIOD = int(round(SPEED_MS/WAIT_MS))
 
-MAX_PART_LEN = max(map(lambda _, part: part.length, RAINBOW_PARTS))
+MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
 NB_PARTS =len(RAINBOW_PARTS)
 CYCLE_NB_STEPS = MAX_PART_LEN*NORMAL_STEP_PERIOD
 
@@ -44,7 +44,7 @@ class Rainbow(object):
         part_idx = 0
         for name, parts_dict in RAINBOW_PARTS:
             start_idx += parts_dict['offset']
-            part = Part(name, start_idx, part_idx, **parts_dict)
+            part = Part(name, start_idx, part_idx, parts_dict)
             start_idx += parts_dict['length']
             part_idx += 1
             
@@ -76,7 +76,7 @@ class Rainbow(object):
 
     def a_colorwipe(self, part, step): 
         pixel_idx = int(step * part._length / CYCLE_NB_STEPS) % part._length
-        if pixel_idx == part._length:
+        if pixel_idx == 0:
             part.set_uniform_color((0,0,0))
 
         part.set_pixel_color(pixel_idx)
@@ -97,7 +97,7 @@ class Rainbow(object):
             return
 
         if len(part._anim_data) == 0:
-            start_pixel = random.randint(int(0.1*part._length), int(0.9*part._length))
+            start_pixel = random.randint(int(0.2*part._length), int(0.8*part._length))
             part._anim_data = {'left_pix': start_pixel, 'right_pix': start_pixel}
             part.set_pixel_color(start_pixel, (200,200,200))
         else:
@@ -124,13 +124,14 @@ class Rainbow(object):
 
 
 class Part(object):
-    def __init__(self, name, start_idx, part_idx, length, is_reverse, base_rgb):
+    def __init__(self, name, start_idx, part_idx, part_dict):
         self._name = name
         self._start_idx = start_idx
-        self._length = length
-        self._is_reverse = is_reverse
-        self._base_rgb = base_rgb
-        self._leds_rgb = [base_rgb] * length
+        self._part_idx = part_idx
+        self._length = part_dict['length']
+        self._is_reverse = part_dict['is_reverse']
+        self._base_rgb = part_dict['base_rgb']
+        self._leds_rgb = [self._base_rgb] * self._length
         self._anim_data = {}
 
     def render(self, strip):
@@ -161,5 +162,6 @@ if __name__ == '__main__':
 
     rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
     rainbow.animation(rainbow.a_commet, None, 5)
+    rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
 
 
