@@ -29,15 +29,15 @@ RAINBOW_RGB = map(wheel, range(256))
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
-LED_BRIGHTNESS = 80     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 155     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('violet',  {'offset': 2, 'length': 20, 'is_reverse': False, 'base_rgb': RAINBOW_RGB[234]}),
-    ('blue',    {'offset': 2, 'length': 20, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[191]}),
-    ('green',   {'offset': 2, 'length': 7,  'is_reverse': False, 'base_rgb': RAINBOW_RGB[149]}),
-    ('yellow',  {'offset': 2, 'length': 10, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[106]}),
-    ('orange',  {'offset': 2, 'length': 8,  'is_reverse': False, 'base_rgb': RAINBOW_RGB[64]}),
-    ('red',     {'offset': 2, 'length': 7,  'is_reverse': True,  'base_rgb': RAINBOW_RGB[21]}),    
+    ('violet',  {'offset': 0, 'length': 37, 'is_reverse': False, 'base_rgb': RAINBOW_RGB[234]}),
+    ('blue',    {'offset': 0, 'length': 32, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[191]}),
+    ('green',   {'offset': 1, 'length': 55,  'is_reverse': False, 'base_rgb': RAINBOW_RGB[149]}),
+    ('yellow',  {'offset': 1, 'length': 24, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[106]}),
+    ('orange',  {'offset': 0, 'length': 20,  'is_reverse': False, 'base_rgb': RAINBOW_RGB[64]}),
+    ('red',     {'offset': 0, 'length': 15,  'is_reverse': True,  'base_rgb': RAINBOW_RGB[21]}),    
 ]
 
 " SPEED PARAMETERS "
@@ -182,11 +182,11 @@ class Part(object):
 if __name__ == '__main__':
     rainbow = Rainbow()
     rainbow.render_parts()
-    time.sleep(1)
+    time.sleep(100)
 
     rainbow.animation(rainbow.a_gradients, (0,0,0), 4)
-##    rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
-##    rainbow.animation(rainbow.a_commet, None, 5)
-##    rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
+    rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
+    rainbow.animation(rainbow.a_commet, None, 5)
+    rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
 
 
