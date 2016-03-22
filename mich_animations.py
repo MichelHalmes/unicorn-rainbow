@@ -35,12 +35,12 @@ class Gradients(Animation):
 
     def run_step(self, part, step_cnt):
         RAINBOW_LEN = len(self.RAINBOW_RGB)
-        start_idx = step_cnt % RAINBOW_LEN
+        start_idx = 0 # step_cnt % RAINBOW_LEN
         leds_rgb = [self.RAINBOW_RGB[int(start_idx + (led_idx*RAINBOW_LEN/part._length))%RAINBOW_LEN] for led_idx in range(part._length)]
         part.set_leds_rgb(leds_rgb)
 
 class Commet(Animation):
-    RESET_RGB = (0,0,0)
+    RESET_RGB = None
     NB_CYCLES_PER_ANIMATION = 3
 
     def run_step(self, part, step_cnt):
