@@ -15,7 +15,7 @@ def wheel(deg):
     red   = cos(deg      *pi/180) * 127 + 128
     green = cos((deg+120)*pi/180) * 127 + 128
     blue  = cos((deg+240)*pi/180) * 127 + 128
-    return (red, green, blue)
+    return (int(red), int(green), int(blue))
 
 
 RAINBOW_RGB = map(wheel, range(360))
