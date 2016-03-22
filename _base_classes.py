@@ -14,7 +14,8 @@ from collections import OrderedDict
 
 import colorsys
 def wheel(deg):
-    return (int(255*c) for c in colorsys.hsv_to_rgb(deg, 1, 1)) 
+    rgb = colorsys.hsv_to_rgb((deg/360.0)**2, 1, 1)
+    return tuple(int(255*c/sum(rgb)) for c in rgb) 
 
 
 RAINBOW_RGB = map(wheel, range(360))

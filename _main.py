@@ -8,7 +8,7 @@ from mich_animations import *
 if __name__ == '__main__':
     rainbow = Rainbow()
     rainbow.render_parts()
-    time.sleep(2)
+    time.sleep(5)
 
     rainbow.run_animation(Gradients(0,10))
     rainbow.run_animation(Colorwipe(0,1))
