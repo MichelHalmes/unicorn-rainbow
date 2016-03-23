@@ -16,7 +16,7 @@ class Colorwipe(Animation):
 
 class Flashparts(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 3
+    NB_CYCLES_PER_ANIMATION = 1
 
     def run_step(self, part, step_cnt):
         if step_cnt % self.NORMAL_NB_STEPS_PER_STABLE_PERIOD != 0:
@@ -24,10 +24,10 @@ class Flashparts(Animation):
 
         periods = step_cnt/self.NORMAL_NB_STEPS_PER_STABLE_PERIOD
 
-        if (periods+part._part_idx) % 2 == 0:
-            part.set_uniform_color()
-        else:
-            part.set_uniform_color((0,0,0))
+        scaled_rgb = self.scale_rgb_brightness(part._base_rgb, 1 + (periods+part._part_idx) % self.NB_RAINBOW_PARTS)
+
+        part.set_uniform_color(scaled_rgb)
+        
 
 class Gradients(Animation):
     RESET_RGB = (0,0,0)

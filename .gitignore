@@ -7,3 +7,4 @@ newtest
 *.swp
 
 .com.apple.timemachine.supported
+*.DS_Store

@@ -20,7 +20,6 @@ def wheel(deg):
 
 RAINBOW_RGB = map(wheel, range(360))
 
-
 " PARTS INITIALIZATION "
 # LED strip configuration:
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM! => 13 or 18).
@@ -44,7 +43,7 @@ SPEED_MS = 200
 # (to avoid the animations being confused with uncontrolled flickering...)
 NORMAL_NB_STEPS_PER_STABLE_PERIOD = int(round(SPEED_MS/WAIT_MS))
 MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
-NB_PARTS =len(RAINBOW_PARTS)
+NB_RAINBOW_PARTS =len(RAINBOW_PARTS)
 NORMAL_NB_STEPS_PER_CYCLE = MAX_PART_LEN*NORMAL_NB_STEPS_PER_STABLE_PERIOD
 
 class Rainbow(object):
@@ -124,6 +123,7 @@ class Animation(object):
     NORMAL_NB_STEPS_PER_CYCLE = NORMAL_NB_STEPS_PER_CYCLE
     NORMAL_NB_STEPS_PER_STABLE_PERIOD = NORMAL_NB_STEPS_PER_STABLE_PERIOD
     RAINBOW_RGB = RAINBOW_RGB
+    NB_RAINBOW_PARTS = NB_RAINBOW_PARTS
 
     RESET_RGB = "Define in BaseClass"
     NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
@@ -137,3 +137,11 @@ class Animation(object):
 
     def run_step(self, part, step_cnt):
         raise NotImplementedError('')
+
+    def scale_rgb_brightness(self, rgb, factor):
+        return tuple(min(int(1.0*c/factor), 255) for c in rgb)
+
+
+
+
+
