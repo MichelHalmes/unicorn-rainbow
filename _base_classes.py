@@ -1,24 +1,13 @@
 import time
 import random
+import colorsys
+import math
 
 from rpi_ws281x.python.neopixel import Color, Adafruit_NeoPixel
-from collections import OrderedDict
 
 
-# from math import cos, pi
-# def wheel(deg):
-#     red   = cos(deg      *pi/180) * 127 + 128
-#     green = cos((deg+120)*pi/180) * 127 + 128
-#     blue  = cos((deg+240)*pi/180) * 127 + 128
-#     return (int(red), int(green), int(blue))
-
-import colorsys
-def wheel(deg):
-    rgb = colorsys.hsv_to_rgb((deg/360.0)**2, 1, 1)
-    return tuple(int(255*c/sum(rgb)) for c in rgb) 
-
-
-RAINBOW_RGB = map(wheel, range(360))
+def hsv_deg_to_rgb(deg):
+    return tuple(int(255*c) for c in colorsys.hsv_to_rgb(deg/360.0, 1, 1)) 
 
 " PARTS INITIALIZATION "
 # LED strip configuration:
@@ -28,23 +17,18 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 155     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('violet',  {'offset': 0, 'length': 37, 'is_reverse': False, 'base_rgb': RAINBOW_RGB[330]}),
-    ('blue',    {'offset': 0, 'length': 32, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[270]}),
-    ('green',   {'offset': 0, 'length': 29, 'is_reverse': False, 'base_rgb': RAINBOW_RGB[210], 'led_step': 2}),
-    ('yellow',  {'offset': 0, 'length': 24, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[150]}),
-    ('orange',  {'offset': 0, 'length': 20, 'is_reverse': False, 'base_rgb': RAINBOW_RGB[90]}),
-    ('red',     {'offset': 0, 'length': 16, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[30]}),
+    ('violet',  {'offset': 0, 'length': 37, 'is_reverse': False, 'base_rgb': hsv_deg_to_rgb(300) }),
+    ('blue',    {'offset': 0, 'length': 32, 'is_reverse': True,  'base_rgb': hsv_deg_to_rgb(240) }),
+    ('green',   {'offset': 0, 'length': 29, 'is_reverse': False, 'base_rgb': hsv_deg_to_rgb(120) , 'led_step': 2}),
+    ('yellow',  {'offset': 0, 'length': 24, 'is_reverse': True,  'base_rgb': hsv_deg_to_rgb(060) }),
+    ('orange',  {'offset': 0, 'length': 20, 'is_reverse': False, 'base_rgb': hsv_deg_to_rgb(030) }),
+    ('red',     {'offset': 0, 'length': 16, 'is_reverse': True,  'base_rgb': hsv_deg_to_rgb(000) }),
 ]
 
 " SPEED PARAMETERS "
 WAIT_MS = 50
 SPEED_MS = 200
-# Convention for the period (in number of animation-steps) at which animations can introduce "big" changes
-# (to avoid the animations being confused with uncontrolled flickering...)
-NORMAL_NB_STEPS_PER_STABLE_PERIOD = int(round(SPEED_MS/WAIT_MS))
-MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
-NB_RAINBOW_PARTS =len(RAINBOW_PARTS)
-NORMAL_NB_STEPS_PER_CYCLE = MAX_PART_LEN*NORMAL_NB_STEPS_PER_STABLE_PERIOD
+
 
 class Rainbow(object):
     def __init__(self):
@@ -119,17 +103,31 @@ class Part(object):
 
 
 
+
+def wheel(deg):
+    rgb = colorsys.hsv_to_rgb((deg/360.0)**2, 1, 1)
+    return tuple(int(255*c/sum(rgb)) for c in rgb)
+
+
+
+
+
 class Animation(object):
-    NORMAL_NB_STEPS_PER_CYCLE = NORMAL_NB_STEPS_PER_CYCLE
-    NORMAL_NB_STEPS_PER_STABLE_PERIOD = NORMAL_NB_STEPS_PER_STABLE_PERIOD
-    RAINBOW_RGB = RAINBOW_RGB
-    NB_RAINBOW_PARTS = NB_RAINBOW_PARTS
+    # Convention for the period (in number of animation-steps) at which animations can introduce "big" changes
+    # (to avoid the animations being confused with uncontrolled flickering...)
+    NORMAL_NB_STEPS_PER_STABLE_PERIOD = int(round(SPEED_MS/WAIT_MS))
+    MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
+    NB_RAINBOW_PARTS =len(RAINBOW_PARTS)
+    NORMAL_NB_STEPS_PER_CYCLE = MAX_PART_LEN*NORMAL_NB_STEPS_PER_STABLE_PERIOD
+
+    RAINBOW_RGB = map(wheel, range(360))
 
     RESET_RGB = "Define in BaseClass"
     NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
 
     def __init__(self, speed, duration):
         self._speed = speed
+        assert self._speed > 0
         self._duration = duration
 
     def get_nb_steps(self):
@@ -140,6 +138,13 @@ class Animation(object):
 
     def scale_rgb_brightness(self, rgb, factor):
         return tuple(min(int(1.0*c/factor), 255) for c in rgb)
+
+    def get_moving_idx(self, led_idx, step_cnt, part, direction=1, cnst_angular_speed=False):
+        period_cnt = 1.*step_cnt/self.NORMAL_NB_STEPS_PER_STABLE_PERIOD
+        if cnst_angular_speed:
+            period_cnt *= 1.*part._length/self.MAX_PART_LEN
+
+        return period_cnt*self._speed + direction*led_idx
 
 
 
