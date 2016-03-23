@@ -14,18 +14,21 @@ class Colorwipe(Animation):
 
         part.set_pixel_color(pixel_idx)
 
-class Flashparts(Animation):
+class UpDownSwipe(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 1
+
+    def __init__(self, speed, duration):
+         super(self.__class__, self).__init__(speed, duration)
+         self._direction = random.choice([-1, 1])
 
     def run_step(self, part, step_cnt):
         if step_cnt % self.NORMAL_NB_STEPS_PER_STABLE_PERIOD != 0:
             return
 
         periods = step_cnt/self.NORMAL_NB_STEPS_PER_STABLE_PERIOD
-
-        scaled_rgb = self.scale_rgb_brightness(part._base_rgb, 1 + (periods+part._part_idx) % self.NB_RAINBOW_PARTS)
-
+        factor = 1 + (periods+self._direction*part._part_idx) % self.NB_RAINBOW_PARTS
+        scaled_rgb = self.scale_rgb_brightness(part._base_rgb, factor)
         part.set_uniform_color(scaled_rgb)
         
 
