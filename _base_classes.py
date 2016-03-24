@@ -26,8 +26,8 @@ RAINBOW_PARTS  =  [
 ]
 
 " SPEED PARAMETERS "
-WAIT_MS = 50
-SPEED_MS = 200
+WAIT_MS = 20
+SPEED_MS = 100
 
 
 class Rainbow(object):

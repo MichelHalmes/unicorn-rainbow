@@ -5,17 +5,20 @@ from _base_classes import Animation
 
 class Feynman(Animation):
     RESET_RGB = None
-    NB_CYCLES_PER_ANIMATION = 3
+    NB_CYCLES_PER_ANIMATION = 2
 
     def __init__(self, rainbow, speed, duration):
-
+        super(self.__class__, self).__init__(rainbow, speed, duration)
         [self.initialize_part_data(part) for part in self.get_parts()]
 
     def initialize_part_data(self, part):
-        start_pixel = random.randint(int(0.2*part._length), int(0.8*part._length))
+        start_idx = self.get_start_idx(part)
         part_data = self.get_data(part)
-        part_data['left_idx'] = start_pixel
-        part_data['right_idx'] = start_pixel
+        part_data['left_idx'] = start_idx
+        part_data['right_idx'] = start_idx
+
+    def get_start_idx(self, part):
+        return random.randint(int(0.25*part._length), int(0.75*part._length))
 
     def run_period(self, part, period_cnt):
 
@@ -24,42 +27,24 @@ class Feynman(Animation):
         left_idx  = part_data['left_idx']  - 1
         right_idx = part_data['right_idx'] + 1
 
+        if left_idx < 0 and right_idx > part._length:
+            left_idx = right_idx = self.get_start_idx(part)
+
+        part_data['left_idx'] = left_idx
+        part_data['right_idx'] = right_idx
+
         part.set_uniform_color()
 
-        part.set_led_color(left_idx,  (255,255,255))
-        part.set_led_color(right_idx, (255,255,255))
+        if left_idx >= 0:
+            part.set_led_color(left_idx,  (255,255,255))
+        if right_idx < part._length:
+            part.set_led_color(right_idx, (255,255,255))
 
-
-    def old(): 
-
-        if len(part._anim_data) == 0:
-            start_pixel = random.randint(int(0.2*part._length), int(0.8*part._length))
-            part._anim_data = {'left_pix': start_pixel, 'right_pix': start_pixel}
-            part.set_pixel_color(start_pixel, (200,200,200))
-        else:
-            left_pix = part._anim_data['left_pix']
-            right_pix = part._anim_data['right_pix']
-            part.set_pixel_color(left_pix)
-            part.set_pixel_color(right_pix)
-            is_done = True
-            if left_pix > 0:
-                left_pix -= 1
-                part.set_pixel_color(left_pix, (250,250,250))
-                part._anim_data['left_pix'] = left_pix
-                is_done = False
-            if right_pix < part._length-1:
-                right_pix += 1
-                part.set_pixel_color(right_pix, (250,250,250))
-                part._anim_data['right_pix'] = right_pix
-                is_done = False
-
-            if is_done:
-                part._anim_data = {}
 
 
 class SwipeLeftRight(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 3
+    NB_CYCLES_PER_ANIMATION = 2
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
@@ -132,7 +117,7 @@ class SwipeUpDown(Animation):
         super(self.__class__, self).__init__(rainbow, speed, duration)
         self._modulus = self._modulus = random.randint(2,self.NB_RAINBOW_PARTS)
         self._direction = random.choice([-1, 1])
-        self._factor_multiplier = 1000 #random.choice([0.3, 1, 1000])
+        self._factor_multiplier = random.choice([0.3, 1, 1000])
         self._cnst_angular_speed = False
 
     def run_step(self, part, step_cnt):
@@ -145,7 +130,7 @@ class SwipeUpDown(Animation):
 
 class Gradients(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 3
+    NB_CYCLES_PER_ANIMATION = 2
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
