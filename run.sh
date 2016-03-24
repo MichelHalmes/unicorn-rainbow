@@ -4,8 +4,6 @@
 
 echo "Launching rainbow!"
 
-echo $pwd
-
-sudo python _main.py
+# sudo python _main.py
 
 exit 0

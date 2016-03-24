@@ -9,36 +9,54 @@ class Feynman(Animation):
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
+        
         [self.initialize_part_data(part) for part in self.get_parts()]
 
     def initialize_part_data(self, part):
-        start_idx = self.get_start_idx(part)
         part_data = self.get_data(part)
-        part_data['left_idx'] = start_idx
-        part_data['right_idx'] = start_idx
+        if 'spark' not in part_data:
+            part_data['spark'] = []
+
+        start_idx = self.get_start_idx(part)
+        self.get_data(part)['spark'].append({'left_idx': start_idx, 'right_idx': start_idx})
 
     def get_start_idx(self, part):
-        return random.randint(int(0.25*part._length), int(0.75*part._length))
+        spark_data = self.get_data(part)['spark']
+        if len(spark_data) == 0:
+            start_idx = random.randint(int(0.25*part._length), int(0.75*part._length))
+        else:
+            low = max(0, spark_data[-1]['left_idx'])
+            high = min(part._length, spark_data[-1]['right_idx'])
+            start_idx = int(random.triangular(low, high))
+        return start_idx
 
     def run_period(self, part, period_cnt):
-
-        part_data = self.get_data(part)
-
-        left_idx  = part_data['left_idx']  - 1
-        right_idx = part_data['right_idx'] + 1
-
-        if left_idx < 0 and right_idx > part._length:
-            left_idx = right_idx = self.get_start_idx(part)
-
-        part_data['left_idx'] = left_idx
-        part_data['right_idx'] = right_idx
-
         part.set_uniform_color()
 
-        if left_idx >= 0:
-            part.set_led_color(left_idx,  (255,255,255))
-        if right_idx < part._length:
-            part.set_led_color(right_idx, (255,255,255))
+        spark_data = self.get_data(part)['spark']
+
+        if spark_data[-1]['right_idx'] - spark_data[-1]['left_idx'] > 10:
+            if random.random() < 0.07:
+                start_idx = self.get_start_idx(part)
+                spark_data.append({'left_idx': start_idx, 'right_idx': start_idx})
+
+        for spark in spark_data:
+            left_idx  = spark['left_idx']  - 1
+            right_idx = spark['right_idx'] + 1
+
+            spark['left_idx'] = left_idx
+            spark['right_idx'] = right_idx
+
+            if left_idx < 0 and right_idx > part._length:
+                spark_data.pop(0)
+                if len(spark_data) == 0:
+                    start_idx = self.get_start_idx(part)
+                    spark_data.append({'left_idx': start_idx, 'right_idx': start_idx})
+
+            if left_idx >= 0:
+                part.set_led_color(left_idx,  (255,255,255))
+            if right_idx < part._length:
+                part.set_led_color(right_idx, (255,255,255))
 
 
 
