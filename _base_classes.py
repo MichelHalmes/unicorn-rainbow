@@ -64,7 +64,6 @@ class Part(object):
         self._base_rgb = part_dict['base_rgb']
         self._led_step = part_dict.get('led_step', 1)
         self._leds_rgb = [self._base_rgb] * self._length
-        self._anim_data = {}
 
     def render(self, strip):
         start = self._start_idx
@@ -87,7 +86,6 @@ class Part(object):
     def set_leds_rgb(self, leds_rgb):
         assert len(leds_rgb) == self._length
         self._leds_rgb = leds_rgb
-
 
 
 
