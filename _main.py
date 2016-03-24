@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # rainbow.render_parts()
     # time.sleep(10)
 
-    SwipeLeftRight(rainbow, 1 ,1).run_animation()
+    SwipeLeftRight(rainbow, 1 ,10).run_animation()
     Gradients(rainbow, 1 ,1).run_animation()
     SwipeUpDown(rainbow, 1 ,1).run_animation()
     Commet(rainbow, 1 ,1).run_animation()

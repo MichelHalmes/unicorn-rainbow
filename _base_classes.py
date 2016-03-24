@@ -26,7 +26,7 @@ RAINBOW_PARTS  =  [
 ]
 
 " SPEED PARAMETERS "
-WAIT_MS = 25
+WAIT_MS = 50
 SPEED_MS = 200
 
 
@@ -119,22 +119,26 @@ class Animation(object):
         assert self._speed > 0
         self._duration = duration
         self._cnst_angular_speed = False
-        self._parts_data = {} 
+        self._parts_data = {-1: {}} 
         for part in self.get_parts():
-            self._parts_data[part._part_idx] = {'prev_period': 0}
+            self._parts_data[part._part_idx] = {'prev_period': -1}
+
 
 
     def get_parts(self):
         return self._rainbow._parts
 
-    def get_data(self, part):
-        return self._parts_data[part._part_idx]
+    def get_data(self, part=None):
+        idx = part._part_idx if part is not None else -1
+        return self._parts_data[idx]
 
 
     def get_nb_steps(self):
         return self._duration * self.NB_CYCLES_PER_ANIMATION * self.NORMAL_NB_STEPS_PER_CYCLE
 
     def run_step(self, part, step_cnt):
+        if step_cnt % self.NORMAL_NB_STEPS_PER_STABLE_PERIOD != 0:
+            return
         period_cnt = int(self.get_period_cnt(part, step_cnt))
         if period_cnt != self.get_data(part)['prev_period']:
             self.run_period(part, period_cnt)
