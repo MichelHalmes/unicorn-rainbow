@@ -26,7 +26,7 @@ RAINBOW_PARTS  =  [
 ]
 
 " SPEED PARAMETERS "
-WAIT_MS = 50
+WAIT_MS = 25
 SPEED_MS = 200
 
 
@@ -53,19 +53,7 @@ class Rainbow(object):
         self._strip.show()
 
 
-    def run_animation(self, animation):
-        for part in self._parts:
-            part.set_uniform_color(animation.RESET_RGB)
-            part._anim_data = {}
-
-        for step_cnt in range(animation.get_nb_steps()):
-            for part in self._parts:
-                animation.run_step(part, step_cnt)
-
-            self.render_parts()
-            time.sleep(WAIT_MS/1000.0)
-
-
+    
 class Part(object):
     def __init__(self, name, start_idx, part_idx, part_dict):
         self._name = name
@@ -92,9 +80,9 @@ class Part(object):
         self._leds_rgb = [rgb] * self._length
 
 
-    def set_pixel_color(self, pixel, rgb = None):
+    def set_led_color(self, led_idx, rgb = None):
         rgb = self._base_rgb  if rgb is None else rgb
-        self._leds_rgb[pixel] = rgb
+        self._leds_rgb[led_idx] = rgb
 
     def set_leds_rgb(self, leds_rgb):
         assert len(leds_rgb) == self._length
@@ -125,26 +113,61 @@ class Animation(object):
     RESET_RGB = "Define in BaseClass"
     NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
 
-    def __init__(self, speed, duration):
+    def __init__(self, rainbow, speed, duration):
+        self._rainbow = rainbow
         self._speed = speed
         assert self._speed > 0
         self._duration = duration
+        self._cnst_angular_speed = False
+        self._parts_data = {} 
+        for part in self.get_parts():
+            self._parts_data[part._part_idx] = {'prev_period': 0}
+
+
+    def get_parts(self):
+        return self._rainbow._parts
+
+    def get_data(self, part):
+        return self._parts_data[part._part_idx]
+
 
     def get_nb_steps(self):
         return self._duration * self.NB_CYCLES_PER_ANIMATION * self.NORMAL_NB_STEPS_PER_CYCLE
 
     def run_step(self, part, step_cnt):
+        period_cnt = int(self.get_period_cnt(part, step_cnt))
+        if period_cnt != self.get_data(part)['prev_period']:
+            self.run_period(part, period_cnt)
+            self.get_data(part)['prev_period'] = period_cnt
+
+    def run_period(self, part, period_cnt):
         raise NotImplementedError('')
+
+    
+    def get_period_cnt(self, part, step_cnt):
+        period_cnt = 1.*step_cnt/self.NORMAL_NB_STEPS_PER_STABLE_PERIOD
+        if self._cnst_angular_speed:
+            period_cnt *= 1.*part._length/self.MAX_PART_LEN
+
+        return period_cnt
+
+
+    def run_animation(self):
+        for part in self.get_parts():
+            part.set_uniform_color(self.RESET_RGB)
+
+        for step_cnt in range(self.get_nb_steps()):
+            for part in self.get_parts():
+                self.run_step(part, step_cnt)
+
+            self._rainbow.render_parts()
+            time.sleep(WAIT_MS/1000.0) 
 
     def scale_rgb_brightness(self, rgb, factor):
         return tuple(min(int(1.0*c/factor), 255) for c in rgb)
 
-    def get_moving_idx(self, led_idx, step_cnt, part, direction=1, cnst_angular_speed=False):
-        period_cnt = 1.*step_cnt/self.NORMAL_NB_STEPS_PER_STABLE_PERIOD
-        if cnst_angular_speed:
-            period_cnt *= 1.*part._length/self.MAX_PART_LEN
 
-        return period_cnt*self._speed + direction*led_idx
+
 
 
 

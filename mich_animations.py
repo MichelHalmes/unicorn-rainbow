@@ -3,31 +3,67 @@ import random
 from _base_classes import Animation
 
 
-class Colorwipe(Animation):
+class SwipeLeftRight(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 3
 
-    def run_step(self, part, step_cnt):
-        pixel_idx = int(step_cnt * part._length / self.NORMAL_NB_STEPS_PER_CYCLE) % part._length
-        if pixel_idx == 0:
-            part.set_uniform_color((0,0,0))
+    def __init__(self, rainbow, speed, duration):
+        super(self.__class__, self).__init__(rainbow, speed, duration)
+        for part in self.get_parts():
+            part_data = self.get_data(part)
+            part_data['left_idx'] = int(0.3*part._length)
+            part_data['left_is_opening'] = True
+            part_data['right_idx'] = int(0.7*part._length)
+            part_data['right_is_opening'] = True
+            
+ 
+        self._cnst_angular_speed = True #random.choice([False, False, True])
 
-        part.set_pixel_color(pixel_idx)
+    def run_period(self, part, period_cnt):
+        def sign(boolean):
+            return 1 if boolean else -1
+
+        part_data = self.get_data(part)
+
+        left_idx  = part_data['left_idx']  - sign(part_data['left_is_opening'])
+        right_idx = part_data['right_idx'] + sign(part_data['right_is_opening'])
 
 
+        if left_idx == -1 and part_data['left_is_opening']:
+            left_idx = 0
+            part_data['left_is_opening'] = False
+        
+        if right_idx == part._length and part_data['right_is_opening']:
+            right_idx = part._length
+            part_data['right_is_opening'] = False
 
-class Flashparts(Animation):
+        if left_idx >= right_idx:
+            part_data['left_is_opening'] = True
+            part_data['right_is_opening'] = True
+
+
+        part.set_uniform_color()
+
+        [part.set_led_color(idx, (0,0,0)) for idx in range(0, left_idx+1)]
+        [part.set_led_color(idx, (0,0,0)) for idx in range(right_idx, part._length)]
+
+        part_data['left_idx'] = left_idx
+        part_data['right_idx'] = right_idx
+        
+
+
+class SwipeUpDown(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 1
 
-    def __init__(self, speed, duration):
-        super(self.__class__, self).__init__(speed, duration)
+    def __init__(self, rainbow, speed, duration):
+        super(self.__class__, self).__init__(rainbow, speed, duration)
         self._modulus = self._modulus = random.randint(2,self.NB_RAINBOW_PARTS)
         self._direction = random.choice([-1, 1])
         self._factor_multiplier = random.choice([0.3, 1, 1000])
 
     def run_step(self, part, step_cnt):
-        period_cnt = step_cnt/self.NORMAL_NB_STEPS_PER_STABLE_PERIOD
+        period_cnt = self.get_period_cnt(part, step_cnt)
         factor = (self.NB_RAINBOW_PARTS + period_cnt + self._direction*part._part_idx) % self._modulus
         factor =  1 + factor * self._factor_multiplier
         scaled_rgb = self.scale_rgb_brightness(part._base_rgb, factor)
@@ -38,8 +74,8 @@ class Gradients(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 3
 
-    def __init__(self, speed, duration):
-        super(self.__class__, self).__init__(speed, duration)
+    def __init__(self, rainbow, speed, duration):
+        super(self.__class__, self).__init__(rainbow, speed, duration)
         self._direction = random.choice([-1, 1])
         self._cnst_angular_speed = random.choice([True, True, False])
 
@@ -47,7 +83,8 @@ class Gradients(Animation):
     def run_step(self, part, step_cnt):
         RAINBOW_LEN = len(self.RAINBOW_RGB)
         def rainbow_idx(led_idx):
-            moving_idx = self.get_moving_idx(led_idx, step_cnt, part, self._direction,self._cnst_angular_speed)
+            period_cnt = self.get_period_cnt(part, step_cnt)
+            moving_idx = period_cnt + self._direction*led_idx + part._length # We add the length again to ensure positivity  
             return int(moving_idx*RAINBOW_LEN/part._length) % RAINBOW_LEN
         
         leds_rgb = [self.RAINBOW_RGB[rainbow_idx(led_idx)] for led_idx in range(part._length)]
