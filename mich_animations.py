@@ -9,8 +9,8 @@ class SwipeLeftRight(Animation):
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
-        self._cnst_angular_speed = True #random.choice([False, False, True])
-        self._synchronize_parts = True
+        self._cnst_angular_speed = random.choice([False, True])
+        self._synchronize_parts = random.choice([False, True])
 
         if self._synchronize_parts:
             self._ref_part = [part for part in self.get_parts() if part._length == self.MAX_PART_LEN][0]
@@ -21,9 +21,9 @@ class SwipeLeftRight(Animation):
 
     def initialize_part_data(self, part):
         part_data = self.get_data(part)
-        part_data['left_idx'] = int(0.3*part._length)
+        part_data['left_idx'] = int(random.uniform(.2, .4)*part._length)
         part_data['left_is_opening'] = True
-        part_data['right_idx'] = int(0.7*part._length)
+        part_data['right_idx'] = int(random.uniform(.6, .8)*part._length)
         part_data['right_is_opening'] = True
 
 
@@ -42,14 +42,14 @@ class SwipeLeftRight(Animation):
             right_idx = part_data['right_idx'] + sign(part_data['right_is_opening'])
 
             if left_idx == -1 and part_data['left_is_opening']:
-                left_idx = 0
+                left_idx = int(random.uniform(0., -.2)*part._length)
                 part_data['left_is_opening'] = False
             
             if right_idx == part._length and part_data['right_is_opening']:
-                right_idx = part._length
+                right_idx = int(random.uniform(1., 1.2)*part._length)
                 part_data['right_is_opening'] = False
 
-            if left_idx >= right_idx:
+            if right_idx - left_idx <= 5:
                 part_data['left_is_opening'] = True
                 part_data['right_is_opening'] = True
 
@@ -57,7 +57,7 @@ class SwipeLeftRight(Animation):
             part_data['right_idx'] = right_idx
 
         else:
-            left_idx  = int(1.*part_data['left_idx'] * part._length / self._ref_part._length)
+            left_idx  = int(part_data['left_idx'] * part._length / self._ref_part._length)
             right_idx = int(part_data['right_idx'] * part._length / self.MAX_PART_LEN)
 
 
