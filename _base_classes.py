@@ -34,12 +34,12 @@ class Rainbow(object):
     def __init__(self):
         self._parts = []
         start_idx = 0
-        part_idx = 0
+        part_id = 0
         for name, parts_dict in RAINBOW_PARTS:
             start_idx += parts_dict['offset']
-            part = Part(name, start_idx, part_idx, parts_dict)
+            part = Part(name, start_idx, part_id, parts_dict)
             start_idx += (part._length - 1)* part._led_step + 1
-            part_idx += 1
+            part_id += 1
 
             self._parts.append(part)
 
@@ -55,10 +55,10 @@ class Rainbow(object):
 
     
 class Part(object):
-    def __init__(self, name, start_idx, part_idx, part_dict):
+    def __init__(self, name, start_idx, part_id, part_dict):
         self._name = name
         self._start_idx = start_idx
-        self._part_idx = part_idx
+        self._id = part_id
         self._length = part_dict['length']
         self._is_reverse = part_dict['is_reverse']
         self._base_rgb = part_dict['base_rgb']
@@ -119,7 +119,7 @@ class Animation(object):
         self._cnst_angular_speed = False
         self._parts_data = {-1: {}} 
         for part in self.get_parts():
-            self._parts_data[part._part_idx] = {'prev_period': -1}
+            self._parts_data[part._id] = {'prev_period': -1}
 
 
 
@@ -127,23 +127,34 @@ class Animation(object):
         return self._rainbow._parts
 
     def get_data(self, part=None):
-        idx = part._part_idx if part is not None else -1
+        idx = part._id if part is not None else -1
         return self._parts_data[idx]
 
 
     def get_nb_steps(self):
         return self._duration * self.NB_CYCLES_PER_ANIMATION * self.NORMAL_NB_STEPS_PER_CYCLE
 
-    def run_step(self, part, step_cnt):
-        if step_cnt % self.NORMAL_NB_STEPS_PER_STABLE_PERIOD != 0:
-            return
-        period_cnt = int(self.get_period_cnt(part, step_cnt))
-        if period_cnt != self.get_data(part)['prev_period']:
-            self.run_period(part, period_cnt)
-            self.get_data(part)['prev_period'] = period_cnt
+    def run_parts_step(self, step_cnt):
+        for part in self.get_parts():
+            self.run_step(part, step_cnt)
 
+        if step_cnt % self.NORMAL_NB_STEPS_PER_STABLE_PERIOD == 0:
+            self.run_parts_period(step_cnt)
+
+        
+    def run_step(self, part, step_cnt):
+        pass
+
+    def run_parts_period(self, step_cnt):
+        for part in self.get_parts():
+            period_cnt = int(self.get_period_cnt(part, step_cnt))
+            if period_cnt != self.get_data(part)['prev_period']:
+                self.run_period(part, period_cnt)
+                self.get_data(part)['prev_period'] = period_cnt
+
+        
     def run_period(self, part, period_cnt):
-        raise NotImplementedError('')
+        pass
 
     
     def get_period_cnt(self, part, step_cnt):
@@ -159,8 +170,7 @@ class Animation(object):
             part.set_uniform_color(self.RESET_RGB)
 
         for step_cnt in range(self.get_nb_steps()):
-            for part in self.get_parts():
-                self.run_step(part, step_cnt)
+            self.run_parts_step(step_cnt)
 
             self._rainbow.render_parts()
             time.sleep(WAIT_MS/1000.0) 
