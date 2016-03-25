@@ -1,4 +1,3 @@
-
 from _base_classes import Rainbow
 import time
 
@@ -10,7 +9,7 @@ if __name__ == '__main__':
     # rainbow.render_parts()
     # time.sleep(10)
 
-    Feynman(rainbow, 1 ,10).run_animation()
+    Snake(rainbow, 1 ,10).run_animation()
     # while True:
     #     Feynman(rainbow, 1 ,1).run_animation()
     #     SwipeLeftRight(rainbow, 1 ,1).run_animation()

@@ -1,6 +1,71 @@
 import random
+import math
 
 from _base_classes import Animation
+
+class Snake(Animation):
+    RESET_RGB = None
+    NB_CYCLES_PER_ANIMATION = 2
+    DOT_RELATIVE_SPEED = 4
+    BLINK_PERIODS = 10
+
+    def __init__(self, rainbow, speed, duration):
+        super(self.__class__, self).__init__(rainbow, speed, duration)
+        
+        [self.initialize_part_data(part) for part in self.get_parts()]
+
+    def initialize_part_data(self, part):
+        part_data = self.get_data(part)
+        part_data['dots'] = []
+
+        dot = self.get_new_dot(part)
+        self.get_data(part)['dots'].append(dot)
+
+    def get_new_dot(self, part):
+        start_idx = random.randint(int(0.25*part._length), int(0.75*part._length))
+        return {'idx': start_idx, 'direction': random.choice([-1, 1]), 'blink_cnt': 2}
+
+    def find_dot_at_idx(self, part, idx):
+        res = [d for d in self.get_data(part)['dots'] if int(d['idx']) == idx]
+        assert len(res)<2
+        return res[0] if res else None
+ 
+    def run_period(self, part, period_cnt):
+        part.set_uniform_color()
+
+        dots_data = self.get_data(part)['dots']
+
+        if random.random() < 0.05*part._length/self.MAX_PART_LEN:
+            dot = self.get_new_dot(part)
+            if not self.find_dot_at_idx(part, dot['idx']):
+                dots_data.append(dot)
+
+        for dot in dots_data:
+
+            if dot['blink_cnt'] > 0:
+                dot['blink_cnt'] -= 1
+            
+            else:
+                dot_idx = dot['idx'] + 1.*dot['direction'] / self.DOT_RELATIVE_SPEED
+                if dot_idx <= 0 or dot_idx >= part._length:
+                    dots_data.remove(dot)
+                    continue
+
+                if self.find_dot_at_idx(part, math.floor(dot['idx'] + dot['direction'])):
+                    dot['blink_cnt'] = self.BLINK_PERIODS
+                    dot['direction'] *= -1
+                else:
+                    dot['idx'] = dot_idx
+
+
+                    
+
+            if dot['blink_cnt'] % 2 == 1:
+                part.set_led_color(int(dot['idx']),  (10, 10, 10))
+            else:
+                part.set_led_color(int(dot['idx']),  (255, 255, 255))
+
+
 
 
 class Feynman(Animation):
@@ -14,44 +79,44 @@ class Feynman(Animation):
 
     def initialize_part_data(self, part):
         part_data = self.get_data(part)
-        if 'spark' not in part_data:
-            part_data['spark'] = []
+        if 'dots' not in part_data:
+            part_data['dots'] = []
 
         start_idx = self.get_start_idx(part)
-        self.get_data(part)['spark'].append({'left_idx': start_idx, 'right_idx': start_idx})
+        self.get_data(part)['dots'].append({'left_idx': start_idx, 'right_idx': start_idx})
 
     def get_start_idx(self, part):
-        spark_data = self.get_data(part)['spark']
-        if len(spark_data) == 0:
+        dots_data = self.get_data(part)['dots']
+        if len(dots_data) == 0:
             start_idx = random.randint(int(0.25*part._length), int(0.75*part._length))
         else:
-            low = max(0, spark_data[-1]['left_idx'])
-            high = min(part._length, spark_data[-1]['right_idx'])
+            low = max(0, dots_data[-1]['left_idx'])
+            high = min(part._length, dots_data[-1]['right_idx'])
             start_idx = int(random.triangular(low, high))
         return start_idx
 
     def run_period(self, part, period_cnt):
         part.set_uniform_color()
 
-        spark_data = self.get_data(part)['spark']
+        dots_data = self.get_data(part)['dots']
 
-        if spark_data[-1]['right_idx'] - spark_data[-1]['left_idx'] > 10:
+        if dots_data[-1]['right_idx'] - dots_data[-1]['left_idx'] > 10:
             if random.random() < 0.07:
                 start_idx = self.get_start_idx(part)
-                spark_data.append({'left_idx': start_idx, 'right_idx': start_idx})
+                dots_data.append({'left_idx': start_idx, 'right_idx': start_idx})
 
-        for spark in spark_data:
-            left_idx  = spark['left_idx']  - 1
-            right_idx = spark['right_idx'] + 1
+        for dot in dots_data:
+            left_idx  = dot['left_idx']  - 1
+            right_idx = dot['right_idx'] + 1
 
-            spark['left_idx'] = left_idx
-            spark['right_idx'] = right_idx
+            dot['left_idx'] = left_idx
+            dot['right_idx'] = right_idx
 
             if left_idx < 0 and right_idx > part._length:
-                spark_data.pop(0)
-                if len(spark_data) == 0:
+                dots_data.pop(0)
+                if len(dots_data) == 0:
                     start_idx = self.get_start_idx(part)
-                    spark_data.append({'left_idx': start_idx, 'right_idx': start_idx})
+                    dots_data.append({'left_idx': start_idx, 'right_idx': start_idx})
 
             if left_idx >= 0:
                 part.set_led_color(left_idx,  (255,255,255))
