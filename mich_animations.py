@@ -137,11 +137,6 @@ class Snake(Animation):
             else:
                 part.set_led_color(int(dot['idx']),  (255, 255, 255))
 
-    
-
-       
-
-
 
 
 class Feynman(Animation):
@@ -150,6 +145,12 @@ class Feynman(Animation):
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
+
+        if random.random() < 0.5:
+            self.run_step = self.run_interval
+        else:
+            self.run_period = self.run_interval
+
         
         [self.initialize_part_data(part) for part in self.get_parts()]
 
@@ -171,7 +172,7 @@ class Feynman(Animation):
             start_idx = int(random.triangular(low, high))
         return start_idx
 
-    def run_period(self, part, period_cnt):
+    def run_interval(self, part, _):
         part.set_uniform_color()
 
         dots_data = self.get_data(part)['dots']
