@@ -309,3 +309,39 @@ class Gradients(Animation):
         part.set_leds_rgb(leds_rgb)
 
 
+class Pendulum(Animation):
+    RESET_RGB = (0,0,0)
+    NB_CYCLES_PER_ANIMATION = 8
+    GRAVITY = 10
+
+    def __init__(self, rainbow, speed, duration):
+        super(self.__class__, self).__init__(rainbow, speed, duration)
+        self._pendel_base_length = random.uniform(5, 20) 
+        self._pendel_delta_pct = git statusrandom.uniform(.03, .10)
+        self._pendel_delta_direction = random.choice([-1, +1, +1])
+
+        [self.initialize_part_data(part) for part in self.get_parts()]
+
+
+    def initialize_part_data(self, part):
+        part_data = self.get_data(part)
+        radius = self._pendel_base_length + \
+            self._pendel_delta_direction*self._pendel_base_length*self._pendel_delta_pct*(part._id-int(self.NB_RAINBOW_PARTS/2))
+        part_data['omega'] = math.sqrt(1.*radius/self.GRAVITY)
+
+
+
+    def run_period(self, part, period_cnt):
+        part.set_uniform_color()
+        part_data = self.get_data(part)
+
+        time_s = 1.*period_cnt*self.SPEED_MS/1000
+        angle = math.cos(part_data['omega']*time_s) # [-1, 1]
+        pct = (angle+1)/2
+        dot_idx_1 = int(round((part._length-1) * pct))
+        dot_idx_2 = int(round((part._length-1) * (1-pct)))
+
+        part.set_led_color(dot_idx_1,  (255,255,255))
+        part.set_led_color(dot_idx_2,  (255,255,255))
+
+

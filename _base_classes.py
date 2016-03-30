@@ -27,7 +27,7 @@ RAINBOW_PARTS  =  [
 
 " SPEED PARAMETERS "
 WAIT_MS = 20
-SPEED_MS = 100
+
 
 
 class Rainbow(object):
@@ -101,6 +101,7 @@ def wheel(deg):
 class Animation(object):
     # Convention for the period (in number of animation-steps) at which animations can introduce "big" changes
     # (to avoid the animations being confused with uncontrolled flickering...)
+    SPEED_MS = 100
     NORMAL_NB_STEPS_PER_STABLE_PERIOD = int(round(SPEED_MS/WAIT_MS))
     MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
     NB_RAINBOW_PARTS =len(RAINBOW_PARTS)

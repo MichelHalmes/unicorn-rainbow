@@ -10,10 +10,10 @@ if __name__ == '__main__':
     # rainbow.render_parts()
     # time.sleep(10)
 
-    # Basic(rainbow, 1 ,1).run_animation()
-    while True:
+    Pendulum(rainbow, 1 ,1).run_animation()
+    # while True:
         # Snake(rainbow, 1 ,2).run_animation()
-        Feynman(rainbow, 1 ,1).run_animation()
+        # Feynman(rainbow, 1 ,1).run_animation()
         # SwipeLeftRight(rainbow, 1 ,1).run_animation()
         # Gradients(rainbow, 1 ,1).run_animation()
         # SwipeUpDown(rainbow, 1 ,1).run_animation()
