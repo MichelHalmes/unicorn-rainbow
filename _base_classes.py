@@ -167,17 +167,19 @@ class Animation(object):
 
 
     def run_animation(self):
+
         for part in self.get_parts():
             part.set_uniform_color(self.RESET_RGB)
+        try:
+            for step_cnt in range(self.get_nb_steps()):
+                self.run_parts_step(step_cnt)
 
-        for step_cnt in range(self.get_nb_steps()):
-            self.run_parts_step(step_cnt)
+                self._rainbow.render_parts()
+                time.sleep(WAIT_MS/1000.0)
+        except Exception:
+            pass
 
-            self._rainbow.render_parts()
-            time.sleep(WAIT_MS/1000.0) 
-
-    def scale_rgb_brightness(self, rgb, factor):
-        return tuple(min(int(1.0*c/factor), 255) for c in rgb)
+    
 
 
 
