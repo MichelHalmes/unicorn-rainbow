@@ -171,7 +171,15 @@ class Gradients(Animation):
 
         palette_name = random.choice(self.COLOR_PALETTES.keys())
         print palette_name
-        self._color_palette = self.COLOR_PALETTES[palette_name]
+        palette = self.COLOR_PALETTES[palette_name]
+        if random.random() < 0.25: # we dicretice
+            nb_colors = random.randint(3, 5)
+            discretize_step = int(math.ceil(1.*len(palette)/(nb_colors)))
+            palette = palette[1::discretize_step] #*nb_colors*3
+            if random.random() < 0.25: # we noisify
+                palette *= int(self.MAX_PART_LEN/nb_colors)
+
+        self._color_palette = palette
 
 
     def run_step(self, part, step_cnt):

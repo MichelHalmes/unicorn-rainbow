@@ -29,8 +29,6 @@ RAINBOW_PARTS  =  [
 " SPEED PARAMETERS "
 WAIT_MS = 20
 
-
-
 class Rainbow(object):
     def __init__(self):
         self._parts = []
@@ -99,7 +97,7 @@ class Animation(object):
     NB_RAINBOW_PARTS =len(RAINBOW_PARTS)
     NORMAL_NB_STEPS_PER_CYCLE = MAX_PART_LEN*NORMAL_NB_STEPS_PER_STABLE_PERIOD
 
-    with open('color_palettes.json', 'r') as fp:
+    with open('./palettes/color_palettes.json', 'r') as fp:
         COLOR_PALETTES = json.load(fp)
 
     RESET_RGB = "Define in BaseClass"

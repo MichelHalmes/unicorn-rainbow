@@ -1,9 +1,10 @@
 from _base_classes import Rainbow
 import time
 
-from mich_animations import *
-from new_animations import *
-from snake_animation import *
+from animations import *
+# import animations
+# print dir(animations)
+
 
 
 if __name__ == '__main__':
