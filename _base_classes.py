@@ -2,6 +2,7 @@ import time
 import random
 import colorsys
 import math
+import json
 
 from rpi_ws281x.python.neopixel import Color, Adafruit_NeoPixel
 
@@ -89,15 +90,6 @@ class Part(object):
 
 
 
-
-def wheel(deg):
-    rgb = colorsys.hsv_to_rgb((deg/360.0)**2, 1, 1)
-    return tuple(int(255*c/sum(rgb)) for c in rgb)
-
-
-
-
-
 class Animation(object):
     # Convention for the period (in number of animation-steps) at which animations can introduce "big" changes
     # (to avoid the animations being confused with uncontrolled flickering...)
@@ -107,7 +99,8 @@ class Animation(object):
     NB_RAINBOW_PARTS =len(RAINBOW_PARTS)
     NORMAL_NB_STEPS_PER_CYCLE = MAX_PART_LEN*NORMAL_NB_STEPS_PER_STABLE_PERIOD
 
-    RAINBOW_RGB = map(wheel, range(360))
+    with open('color_palettes.json', 'r') as fp:
+        COLOR_PALETTES = json.load(fp)
 
     RESET_RGB = "Define in BaseClass"
     NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
@@ -167,9 +160,9 @@ class Animation(object):
 
 
     def run_animation(self):
-
         for part in self.get_parts():
             part.set_uniform_color(self.RESET_RGB)
+
         try:
             for step_cnt in range(self.get_nb_steps()):
                 self.run_parts_step(step_cnt)
@@ -178,6 +171,12 @@ class Animation(object):
                 time.sleep(WAIT_MS/1000.0)
         except Exception:
             pass
+
+    # @staticmethod
+    # def hsv_deg_to_rgb(deg, sat, val):
+    #     assert sat>=0 and sat<=1
+    #     assert val>=0 and val<=1
+    #     return tuple(int(255*c) for c in colorsys.hsv_to_rgb(deg/360.0, sat, val)) 
 
     
 

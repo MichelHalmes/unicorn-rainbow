@@ -11,7 +11,7 @@ if __name__ == '__main__':
     # rainbow.render_parts()
     # time.sleep(10)
 
-    Snake(rainbow, 1, 10).run_animation()
+    Gradients(rainbow, 1, 10).run_animation()
     while True:
         Snake(rainbow, 1 ,2).run_animation()
         Feynman(rainbow, 1 ,1).run_animation()

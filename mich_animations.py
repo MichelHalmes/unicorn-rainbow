@@ -1,5 +1,6 @@
 import random
 import math
+import colorsys
 
 from _base_classes import Animation
 
@@ -8,7 +9,7 @@ from _base_classes import Animation
 
 class Feynman(Animation):
     RESET_RGB = None
-    NB_CYCLES_PER_ANIMATION = 2
+    NB_CYCLES_PER_ANIMATION = 1
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
@@ -71,7 +72,7 @@ class Feynman(Animation):
 
 class SwipeLeftRight(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 2
+    NB_CYCLES_PER_ANIMATION = 1
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
@@ -146,7 +147,7 @@ class SwipeUpDown(Animation):
         self._direction = random.choice([-1, 1])
         self._factor_multiplier = random.choice([0.3, 1, 1000])
         self._cnst_angular_speed = False
-        
+
     def scale_rgb_brightness(self, rgb, factor):
         return tuple(min(int(1.0*c/factor), 255) for c in rgb)
 
@@ -161,27 +162,32 @@ class SwipeUpDown(Animation):
 class Gradients(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 2
+ 
 
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
         self._direction = random.choice([-1, 1])
         self._cnst_angular_speed = random.choice([True, True, False])
 
+        palette_name = random.choice(self.COLOR_PALETTES.keys())
+        print palette_name
+        self._color_palette = self.COLOR_PALETTES[palette_name]
+
 
     def run_step(self, part, step_cnt):
-        RAINBOW_LEN = len(self.RAINBOW_RGB)
-        def rainbow_idx(led_idx):
+        palette_len = len(self._color_palette)
+        def palette_idx(led_idx):
             period_cnt = self.get_period_cnt(part, step_cnt)
             moving_idx = period_cnt + self._direction*led_idx + part._length # We add the length again to ensure positivity  
-            return int(moving_idx*RAINBOW_LEN/part._length) % RAINBOW_LEN
+            return int(round(moving_idx*palette_len/part._length)) % palette_len
         
-        leds_rgb = [self.RAINBOW_RGB[rainbow_idx(led_idx)] for led_idx in range(part._length)]
+        leds_rgb = [self._color_palette[palette_idx(led_idx)] for led_idx in range(part._length)]
         part.set_leds_rgb(leds_rgb)
 
 
 class Pendulum(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 8
+    NB_CYCLES_PER_ANIMATION = 2
     GRAVITY = 10
 
     def __init__(self, rainbow, speed, duration):
