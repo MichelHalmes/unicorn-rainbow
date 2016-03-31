@@ -2,6 +2,7 @@ import random
 import math
 
 from _base_classes import Animation
+# from palettes.banner_symbols import CHARACTERS
 
 class Basic(Animation):
     RESET_RGB = (0,0,0)
@@ -28,6 +29,7 @@ class Basic(Animation):
         part.set_led_color(int(round(part._length*0.5)), (200,200,200))
         part.set_led_color(int(round(part._length*0.7)), (200,200,200))
         part.set_led_color(int(round(part._length*0.9)), (200,200,200))
+
 
 
 
@@ -83,10 +85,10 @@ class Surface2D(Animation):
     def __init__(self, rainbow, speed, duration):
         super(self.__class__, self).__init__(rainbow, speed, duration)
 
-        palette_name = 'gist_rainbow' #random.choice(self.COLOR_PALETTES.keys())
+        palette_name = random.choice(self.COLOR_PALETTES.keys())
         self._palette = self.COLOR_PALETTES[palette_name]
 
-        function_name = 'trigonometry' # random.choice(self.FUNCTIONS.keys())
+        function_name = random.choice(self.FUNCTIONS.keys())
         self._function = self.FUNCTIONS[function_name]
 
         print "Palette: %s; Function: %s" % (palette_name, function_name)

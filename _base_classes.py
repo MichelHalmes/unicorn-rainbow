@@ -168,8 +168,8 @@ class Animation(object):
 
                 self._rainbow.render_parts()
                 time.sleep(WAIT_MS/1000.0)
-        except Exception:
-            raise
+        except StopIteration:
+            pass
 
     # @staticmethod
     # def hsv_deg_to_rgb(deg, sat, val):
