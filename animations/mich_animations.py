@@ -184,12 +184,12 @@ class Gradients(Animation):
 
     def run_step(self, part, step_cnt):
         palette_len = len(self._color_palette)
-        def palette_idx(led_idx):
+        def get_palette_idx(led_idx):
             period_cnt = self.get_period_cnt(part, step_cnt)
             moving_idx = period_cnt + self._direction*led_idx + part._length # We add the length again to ensure positivity  
             return int(round(moving_idx*palette_len/part._length)) % palette_len
         
-        leds_rgb = [self._color_palette[palette_idx(led_idx)] for led_idx in range(part._length)]
+        leds_rgb = [self._color_palette[get_palette_idx(led_idx)] for led_idx in range(part._length)]
         part.set_leds_rgb(leds_rgb)
 
 

@@ -12,13 +12,13 @@ if __name__ == '__main__':
     # rainbow.render_parts()
     # time.sleep(10)
 
-    # Gradients(rainbow, 1, 10).run_animation()
-    while True:
-        # Snake(rainbow, 1 , 1).run_animation()
-        # Feynman(rainbow, 1 ,1).run_animation()
-        # SwipeLeftRight(rainbow, 1 ,1).run_animation()
-        Gradients(rainbow, 1 ,1).run_animation()
-        # SwipeUpDown(rainbow, 1 ,1).run_animation()
-        # Pendulum(rainbow, 1 ,1).run_animation()
+    Surface2D(rainbow, 1, 10).run_animation()
+    # while True:
+    #     # Snake(rainbow, 1 , 1).run_animation()
+    #     # Feynman(rainbow, 1 ,1).run_animation()
+    #     # SwipeLeftRight(rainbow, 1 ,1).run_animation()
+    #     Gradients(rainbow, 1 ,1).run_animation()
+    #     # SwipeUpDown(rainbow, 1 ,1).run_animation()
+    #     # Pendulum(rainbow, 1 ,1).run_animation()
     
 	

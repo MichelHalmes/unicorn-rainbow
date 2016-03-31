@@ -91,6 +91,7 @@ class Part(object):
 class Animation(object):
     # Convention for the period (in number of animation-steps) at which animations can introduce "big" changes
     # (to avoid the animations being confused with uncontrolled flickering...)
+    WAIT_MS = WAIT_MS
     SPEED_MS = 100
     NORMAL_NB_STEPS_PER_STABLE_PERIOD = int(round(SPEED_MS/WAIT_MS))
     MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
@@ -168,7 +169,7 @@ class Animation(object):
                 self._rainbow.render_parts()
                 time.sleep(WAIT_MS/1000.0)
         except Exception:
-            pass
+            raise
 
     # @staticmethod
     # def hsv_deg_to_rgb(deg, sat, val):
