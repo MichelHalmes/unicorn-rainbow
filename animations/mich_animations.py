@@ -10,6 +10,7 @@ from _base_classes import Animation
 class Feynman(Animation):
     RESET_RGB = None
     NB_CYCLES_PER_ANIMATION = 1
+    VARIETY = 3
 
     def __init__(self, rainbow):
         super(self.__class__, self).__init__(rainbow)
@@ -73,6 +74,7 @@ class Feynman(Animation):
 class SwipeLeftRight(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 1
+    VARIETY = 3
 
     def __init__(self, rainbow):
         super(self.__class__, self).__init__(rainbow)
@@ -139,7 +141,8 @@ class SwipeLeftRight(Animation):
 
 class SwipeUpDown(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 1
+    NB_CYCLES_PER_ANIMATION = 1 
+    VARIETY = 3
 
     def __init__(self, rainbow):
         super(self.__class__, self).__init__(rainbow)
@@ -162,6 +165,7 @@ class SwipeUpDown(Animation):
 class Gradients(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 2
+    VARIETY = 5*2
  
 
     def __init__(self, rainbow):
@@ -195,7 +199,8 @@ class Gradients(Animation):
 
 class Pendulum(Animation):
     RESET_RGB = (0,0,0)
-    NB_CYCLES_PER_ANIMATION = 2
+    NB_CYCLES_PER_ANIMATION = 4
+    VARIETY = 3
     GRAVITY = 10
 
     def __init__(self, rainbow):
@@ -231,6 +236,7 @@ class Pendulum(Animation):
 class Surface2D(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 2
+    VARIETY = 4*2
 
     FUNCTIONS = {}
 
@@ -269,12 +275,28 @@ class Surface2D(Animation):
     # TRIGONOMETRY
     def get_value_fun():
         sign = random.choice([-1, +1, +1])
-        exp = random.choice([1, 2, 3, 4])
+        exp_y = random.choice([1, 2, 3])
+        exp_cos =  random.choice([1, 3])
+        no_x = random.choice([1, 1, 0])
         def value_f(x, y, rot): 
-            return  math.sin(2.*math.pi*(y**exp+rot))*math.sin(2.*math.pi*(x+sign*rot))
+            return  math.cos(2.*math.pi*(y**exp_y+rot))**exp_cos * math.cos(2.*math.pi*no_x*(x+sign*rot))
         return value_f
     value_range = 2
     FUNCTIONS['trigonometry'] = (value_range, get_value_fun())
+
+    # WAVE
+    def get_value_fun():
+        # sign = random.choice([-1, +1, +1])
+        # exp = random.choice([1, 2, 3, 4])
+        # https://en.wikipedia.org/wiki/Envelope_(waves)#Phase_and_group_velocity
+        v_phase = 1#random.choice([-1, +1])
+        lambda_mod = 4 #random.choice([1, 2, 4])
+        v_group = -1#random.choice([-1, +1])
+        def value_f(x, y, rot): 
+            return  math.cos(2.*math.pi*(y/lambda_mod - rot*v_group/lambda_mod)) * math.sin(2.*math.pi*(y - v_phase*rot))
+        return value_f
+    value_range = 2
+    FUNCTIONS['wave'] = (value_range, get_value_fun())
  
 
     def __init__(self, rainbow):
@@ -283,7 +305,7 @@ class Surface2D(Animation):
         palette_name = random.choice(self.COLOR_PALETTES.keys())
         self._palette = self.COLOR_PALETTES[palette_name]
 
-        function_name =  'trigonometry' #random.choice(self.FUNCTIONS.keys())
+        function_name =  'wave' #random.choice(self.FUNCTIONS.keys())
         self._function = self.FUNCTIONS[function_name]
 
         print "Palette: %s; Function: %s" % (palette_name, function_name)

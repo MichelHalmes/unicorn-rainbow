@@ -7,7 +7,8 @@ PIX_PER_CHAR = 8
 class TextBanner(Animation):
     RESET_RGB = None
     NB_CYCLES_PER_ANIMATION = 10
-    
+    VARIETY = 5
+
 
     def __init__(self, rainbow):
         super(self.__class__, self).__init__(rainbow)

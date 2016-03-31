@@ -103,6 +103,7 @@ class Animation(object):
 
     RESET_RGB = "Define in BaseClass"
     NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
+    VARIETY = "Define in BaseClass"
 
     def __init__(self, rainbow):
         self._rainbow = rainbow

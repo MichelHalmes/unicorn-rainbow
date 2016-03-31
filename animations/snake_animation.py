@@ -5,7 +5,9 @@ from _base_classes import Animation
 
 class Snake(Animation):
     RESET_RGB = None
-    NB_CYCLES_PER_ANIMATION = 2
+    NB_CYCLES_PER_ANIMATION = 10
+    VARIETY = 5
+
     DOT_RELATIVE_SPEED = 4
     BLINK_PERIODS = 10
 
@@ -87,6 +89,8 @@ class Snake(Animation):
             
         else:
             tail_part = self.get_parts()[tail_data['part_id']]
+            if tail_length > tail_part._length:
+                raise StopIteration()
             tail_direction = tail_data['direction']
             tail_idx = tail_data['idx']
             for led_idx in range(tail_idx, tail_idx - tail_length*tail_direction, -tail_direction):

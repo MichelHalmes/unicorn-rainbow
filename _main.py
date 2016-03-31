@@ -1,31 +1,41 @@
 from _base_classes import Rainbow
 import time
+import random
 
 from animations import *
-# import animations
-# print dir(animations)
 
+ANIMATIONS = [
+    Surface2D,
+    Pendulum,
+    TextBanner,
+    Gradients,
+    Snake,
+    Feynman,
+    SwipeLeftRight,   
+    SwipeUpDown,
+]
 
 
 if __name__ == '__main__':
     rainbow = Rainbow()
-    # rainbow.render_parts()
-    # time.sleep(10)
 
-    # Basic(rainbow, 1 ,1).run_animation()
-    Surface2D(rainbow, 1, 3).run_animation()
+    Surface2D(rainbow).run_animation()
+
+
+
+    # TOTAL_VARIETY = sum([anim.VARIETY for anim in ANIMATIONS])
     
     # while True:
+    #     treshold_proba = random.random()
+    #     cum_proba = 0
+    #     for anim in ANIMATIONS:
+    #         cum_proba+= (1.*anim.VARIETY/TOTAL_VARIETY)
+    #         if cum_proba >= treshold_proba:
+    #             break
+    #     print anim.__name__
+    #     anim(rainbow).run_animation()
         
-    #     Surface2D(rainbow, 1, 1).run_animation()
-    #     Pendulum(rainbow, 1 ,1).run_animation()
-    #     TextBanner(rainbow, 1, 10).run_animation()
-    #     Gradients(rainbow, 1 ,1).run_animation()
-    #     Snake(rainbow, 1 , 1).run_animation()
-    #     Feynman(rainbow, 1 ,1).run_animation()
-    #     SwipeLeftRight(rainbow, 1 ,1).run_animation()
-    
-    #     SwipeUpDown(rainbow, 1 ,1).run_animation()
+        
         
     
 	
