@@ -8,8 +8,8 @@ class Basic(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 2
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
         self._cnst_angular_speed = random.choice([False, True])
         self._synchronize_parts = random.choice([False, True])
 

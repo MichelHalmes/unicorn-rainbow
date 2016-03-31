@@ -11,8 +11,8 @@ class Feynman(Animation):
     RESET_RGB = None
     NB_CYCLES_PER_ANIMATION = 1
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
 
         if random.random() < 0.5:
             self.run_step = self.run_interval
@@ -74,8 +74,8 @@ class SwipeLeftRight(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 1
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
         self._cnst_angular_speed = random.choice([False, True])
         self._synchronize_parts = random.choice([False, True])
 
@@ -141,8 +141,8 @@ class SwipeUpDown(Animation):
     RESET_RGB = (0,0,0)
     NB_CYCLES_PER_ANIMATION = 1
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
         self._modulus = self._modulus = random.randint(2,self.NB_RAINBOW_PARTS)
         self._direction = random.choice([-1, 1])
         self._factor_multiplier =  random.choice([.7, 2, 1000])
@@ -164,8 +164,8 @@ class Gradients(Animation):
     NB_CYCLES_PER_ANIMATION = 2
  
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
         self._direction = random.choice([-1, 1])
         self._cnst_angular_speed = random.choice([True, True, False])
 
@@ -198,8 +198,8 @@ class Pendulum(Animation):
     NB_CYCLES_PER_ANIMATION = 2
     GRAVITY = 10
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
         self._pendel_base_length = random.uniform(5, 20) 
         self._pendel_delta_pct = random.uniform(.03, .10)
         self._pendel_delta_direction = random.choice([-1, +1, +1])
@@ -277,8 +277,8 @@ class Surface2D(Animation):
     FUNCTIONS['trigonometry'] = (value_range, get_value_fun())
  
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
 
         palette_name = random.choice(self.COLOR_PALETTES.keys())
         self._palette = self.COLOR_PALETTES[palette_name]

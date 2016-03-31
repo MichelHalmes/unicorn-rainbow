@@ -9,8 +9,8 @@ class Snake(Animation):
     DOT_RELATIVE_SPEED = 4
     BLINK_PERIODS = 10
 
-    def __init__(self, rainbow, speed, duration):
-        super(self.__class__, self).__init__(rainbow, speed, duration)
+    def __init__(self, rainbow):
+        super(self.__class__, self).__init__(rainbow)
         
         [self.initialize_part_data(part) for part in self.get_parts()]
 

@@ -104,11 +104,11 @@ class Animation(object):
     RESET_RGB = "Define in BaseClass"
     NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
 
-    def __init__(self, rainbow, speed, duration):
+    def __init__(self, rainbow):
         self._rainbow = rainbow
-        self._speed = speed
+        self._speed = 1
         assert self._speed > 0
-        self._duration = duration
+        self._duration = 1
         self._cnst_angular_speed = False
         self._parts_data = {-1: {}} 
         for part in self.get_parts():
