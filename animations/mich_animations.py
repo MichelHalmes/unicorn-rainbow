@@ -289,14 +289,32 @@ class Surface2D(Animation):
         # sign = random.choice([-1, +1, +1])
         # exp = random.choice([1, 2, 3, 4])
         # https://en.wikipedia.org/wiki/Envelope_(waves)#Phase_and_group_velocity
-        v_phase = 1#random.choice([-1, +1])
-        lambda_mod = 4 #random.choice([1, 2, 4])
-        v_group = -1#random.choice([-1, +1])
+        v_phase = random.choice([-1, +1])
+        lambda_mod = random.choice([1, 2, 4])
+        v_group = random.choice([-1, +1])
         def value_f(x, y, rot): 
             return  math.cos(2.*math.pi*(y/lambda_mod - rot*v_group/lambda_mod)) * math.sin(2.*math.pi*(y - v_phase*rot))
         return value_f
     value_range = 2
     FUNCTIONS['wave'] = (value_range, get_value_fun())
+
+    # DIFFRACTION
+    def get_value_fun():
+        # sign = random.choice([-1, +1, +1])
+        # exp = random.choice([1, 2, 3, 4])
+        # https://en.wikipedia.org/wiki/Envelope_(waves)#Phase_and_group_velocity
+        screen_dist = 5
+        
+        def sinc(var):
+           
+        def value_f(x, y, rot):
+            theta = math.atan(math.sqrt(x**2 + y**2)/screen_dist)
+             if theta == 0:
+                return 1
+            return math.sin(theta)/theta
+        return value_f
+    value_range = 2
+    FUNCTIONS['diffraction'] = (value_range, get_value_fun())
  
 
     def __init__(self, rainbow):
@@ -305,7 +323,7 @@ class Surface2D(Animation):
         palette_name = random.choice(self.COLOR_PALETTES.keys())
         self._palette = self.COLOR_PALETTES[palette_name]
 
-        function_name =  'wave' #random.choice(self.FUNCTIONS.keys())
+        function_name =  'diffraction' #random.choice(self.FUNCTIONS.keys())
         self._function = self.FUNCTIONS[function_name]
 
         print "Palette: %s; Function: %s" % (palette_name, function_name)
