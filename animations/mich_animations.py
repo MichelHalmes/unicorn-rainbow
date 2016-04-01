@@ -298,27 +298,29 @@ class Surface2D(Animation):
     value_range = 2
     FUNCTIONS['wave'] = (value_range, get_value_fun())
 
-    # DIFFRACTION
-    def get_value_fun():
-        # sign = random.choice([-1, +1, +1])
-        # exp = random.choice([1, 2, 3, 4])
-        # https://en.wikipedia.org/wiki/Envelope_(waves)#Phase_and_group_velocity
-        screen_dist = 1
-        m = 1
+    # # DIFFRACTION
+    # def get_value_fun():
+    #     # sign = random.choice([-1, +1, +1])
+    #     # exp = random.choice([1, 2, 3, 4])
+    #     # https://en.wikipedia.org/wiki/Envelope_(waves)#Phase_and_group_velocity
+    #     screen_dist = 1
+    #     m = 1
 
-        def sinc(val):
-            if val == 0:
-                return 1
-            return math.sin(2*val)/val
+    #     def sinc(val):
+    #         if val == 0:
+    #             return 1
+    #         return math.sin(2*val) #/val
            
-        def value_f(x, y, rot):
-            # theta = math.atan(math.sqrt(0**2 + (y*4)**2)/screen_dist)
-            # print x, y, theta
-            return sinc(math.sqrt(0**2 + (y*4)**2))**2
-            # return math.atan(math.sqrt(x**2 + y**2)/screen_dist)
-        return value_f
-    value_range = 1
-    FUNCTIONS['diffraction'] = (value_range, get_value_fun())
+    #     def value_f(x, y, rot):
+    #         # theta = math.atan(math.sqrt(0**2 + (y*4)**2)/screen_dist)
+    #         # print x, y, theta
+    #         r = math.sqrt(x**2 + (y*3)**2)
+    #         result = sinc(r)**2
+    #         return result
+    #         # return math.atan(math.sqrt(x**2 + y**2)/screen_dist)
+    #     return value_f
+    # value_range = 1
+    # FUNCTIONS['diffraction'] = (value_range, get_value_fun())
  
 
     def __init__(self, rainbow):
@@ -327,7 +329,7 @@ class Surface2D(Animation):
         palette_name = random.choice(self.COLOR_PALETTES.keys())
         self._palette = self.COLOR_PALETTES[palette_name]
 
-        function_name =  'diffraction' #random.choice(self.FUNCTIONS.keys())
+        function_name =  random.choice(self.FUNCTIONS.keys())
         self._function = self.FUNCTIONS[function_name]
 
         print "Palette: %s; Function: %s" % (palette_name, function_name)

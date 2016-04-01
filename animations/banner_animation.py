@@ -14,7 +14,7 @@ class TextBanner(Animation):
         super(self.__class__, self).__init__(rainbow)
         self._cnst_angular_speed = False
         
-        message = random.choice(MESSAGES)
+        message = MESSAGES[-1] #random.choice(MESSAGES)
 
         for part in self.get_parts():
             self.get_data(part)['string'] = '-'*self.MAX_PART_LEN
@@ -65,7 +65,8 @@ MESSAGES = [
 "IMMEDIACY!",
 "EACH 1 TEACH 1!",
 "GRATITUDE!",
-"NO MOOP!"
+"NO MOOP!",
+"& & &"
 ]
 
 CHARACTERS = {
@@ -396,6 +397,14 @@ CHARACTERS = {
 -####-
 ------
 ------
+""",
+'&': """
+----##--
+#---#---
+--#-##--
+----#--#
+--#--#--
+#------#
 """,
 
 
