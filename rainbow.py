@@ -37,7 +37,6 @@ class Rainbow(object):
             
             self._parts.append(part)
 
-
         self._strip = Adafruit_NeoPixel(start_idx, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
         self._strip.begin()
 
@@ -47,6 +46,22 @@ class Rainbow(object):
            
         self._strip.show()
 
+    def reset(self):
+        for part in self._parts:
+            part.set_uniform_color((0,0,0))
+
+    def colorwipe(self):
+        duration_ms = 2
+        wait_ms = 50
+        nb_steps = int(duration_ms/wait_ms)
+        for step in range(nb_steps):
+            for part in self._parts:
+                pixel = int(step * part._leds_rgb / nb_steps)
+                part.set_pixel_color(pixel)
+            strip.render_parts()
+            time.sleep(wait_ms/1000.0)
+
+
             
 
 class Part(object):
@@ -54,6 +69,7 @@ class Part(object):
         self._name = name
         self._start_idx = start_idx
         self._length = length
+        self._base_rgb
         self._leds_rgb = [base_rgb] * length
 
     def render(self, strip):
@@ -61,11 +77,27 @@ class Part(object):
         end = start + self._length
         strip.setPixelColor(slice(start,end), map(lambda  rgb: Color(*rgb), self._leds_rgb))
 
+    def set_uniform_color(self, rgb = None):
+        rgb = self._base_rgb  if rgb is None else rgb
+        self._leds_rgb = [rgb] * self._length
+
+    def set_pixel_color(self, pixel, rgb = None):
+        rgb = self._base_rgb  if rgb is None else rgb
+        self._leds_rgb[pixel] = rgb
+
 
 
 
 # Main program logic follows:
 if __name__ == '__main__':
-    Rainbow().render_parts()
+    rainbow = Rainbow()
+    rainbow.render_parts()
+    time.sleep(2)
+
+    rainbow.reset()
+    rainbow.render_parts()
+    time.sleep(1)
+
+    rainbow.colorwipe()
 
 
