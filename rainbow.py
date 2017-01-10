@@ -17,26 +17,36 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 80     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('violet',   {'offset': 2, 'length': 20, 'is_reverse': False, 'basecolor': (100,50,255)}),
-    ('blue',     {'offset': 2, 'length': 20, 'is_reverse': True, 'basecolor': (0,0,255)}),
-    ('green',    {'offset': 2, 'length': 7, 'is_reverse': False, 'basecolor': (0,255,0)}),
-    ('yellow',   {'offset': 2, 'length': 10, 'is_reverse': True, 'basecolor': (10,155,0)}),
-    ('orange',   {'offset': 2, 'length': 8, 'is_reverse': False, 'basecolor': (128,128,0)}),
-    ('red',      {'offset': 2, 'length': 7, 'is_reverse': True, 'basecolor': (255,0,0)}),    
+    ('violet',   {'offset': 2, 'length': 20, 'is_reverse': False, 'base_rgb': (100,50,255)}),
+    ('blue',     {'offset': 2, 'length': 20, 'is_reverse': True,  'base_rgb': (0,0,255)}),
+    ('green',    {'offset': 2, 'length': 7,  'is_reverse': False, 'base_rgb': (0,255,0)}),
+    ('yellow',   {'offset': 2, 'length': 10, 'is_reverse': True,  'base_rgb': (10,155,0)}),
+    ('orange',   {'offset': 2, 'length': 8,  'is_reverse': False, 'base_rgb': (128,128,0)}),
+    ('red',      {'offset': 2, 'length': 7,  'is_reverse': True,  'base_rgb': (255,0,0)}),    
 ]
 
 WAIT_MS = 50
-                    
+SPEED_MS = 200
+
+NORMAL_STEP_PERIOD = int(round(SPEED_MS/WAIT_MS))
+
+MAX_PART_LEN = max(map(lambda _, part: part.length, RAINBOW_PARTS))
+NB_PARTS =len(RAINBOW_PARTS)
+CYCLE_NB_STEPS = MAX_PART_LEN*NORMAL_STEP_PERIOD
+
+
 
 class Rainbow(object):
     def __init__(self):
 
         self._parts = []
         start_idx = 0
+        part_idx = 0
         for name, parts_dict in RAINBOW_PARTS:
             start_idx += parts_dict['offset']
-            part = Part(name, start_idx, parts_dict['length'], parts_dict['is_reverse'], parts_dict['basecolor'])
+            part = Part(name, start_idx, part_idx, **parts_dict)
             start_idx += parts_dict['length']
+            part_idx += 1
             
             self._parts.append(part)
 
@@ -51,28 +61,41 @@ class Rainbow(object):
         self._strip.show()
 
     
-    def animation(self, anim_func, reset_rgb, duration_ms=2000):
+    def animation(self, anim_func, reset_rgb, nb_cycles=3):
         self._anim_data = {}
         for part in self._parts:
             part.set_uniform_color(reset_rgb)
             part._anim_data = {}
 
-        nb_steps = int(duration_ms/WAIT_MS)
-        for step in range(nb_steps):
-            for part_idx, part in enumerate(self._parts):
-                anim_func(part, part_idx, step, nb_steps)
+        for step in range(nb_cycles*CYCLE_NB_STEPS):
+            for part in self._parts:
+                anim_func(part, step)
 
             self.render_parts()
             time.sleep(WAIT_MS/1000.0)
 
-    def a_colorwipe(self, part, part_idx, step, nb_steps): 
-        pixel_idx = int(step * part._length / nb_steps)
-        part.set_pixel_color(pixel_idx)
-            
+    def a_colorwipe(self, part, step): 
+        pixel_idx = int(step * part._length / CYCLE_NB_STEPS) % part._length
+        if pixel_idx == part._length:
+            part.set_uniform_color((0,0,0))
 
-    def a_commet(self, part, part_idx, step, nb_steps):
-        if step % 4 != 0:
+        part.set_pixel_color(pixel_idx)
+
+    def a_flashparts(self, part, step): 
+        if step % NORMAL_STEP_PERIOD != 0: 
             return
+
+        periods = step/NORMAL_STEP_PERIOD
+
+        if (periods+part._part_idx) % 2 == 0:
+            part.set_uniform_color()
+        else:
+            part.set_uniform_color((0,0,0))
+
+    def a_commet(self, part, step):
+        if step % NORMAL_STEP_PERIOD != 0: 
+            return
+
         if len(part._anim_data) == 0:
             start_pixel = random.randint(int(0.1*part._length), int(0.9*part._length))
             part._anim_data = {'left_pix': start_pixel, 'right_pix': start_pixel}
@@ -99,10 +122,9 @@ class Rainbow(object):
 
 
 
-            
 
 class Part(object):
-    def __init__(self, name, start_idx, length, is_reverse, base_rgb):
+    def __init__(self, name, start_idx, part_idx, length, is_reverse, base_rgb):
         self._name = name
         self._start_idx = start_idx
         self._length = length
@@ -137,7 +159,7 @@ if __name__ == '__main__':
     rainbow.render_parts()
     time.sleep(1)
 
-    rainbow.animation(rainbow.a_colorwipe, (0,0,0))
-    rainbow.animation(rainbow.a_commet, None, 5000)
+    rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
+    rainbow.animation(rainbow.a_commet, None, 5)
 
 
