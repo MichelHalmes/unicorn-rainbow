@@ -16,12 +16,12 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 80     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('red',      {'offset': 2, 'length': 3, 'basecolor': (255,0,0)}),
-    ('orange',   {'offset': 2, 'length': 4, 'basecolor': (128,128,0)}),
-    ('yellow',   {'offset': 2, 'length': 5, 'basecolor': (10,155,0)}),
-    ('green',    {'offset': 2, 'length': 6, 'basecolor': (0,255,0)}),
-    ('blue',     {'offset': 2, 'length': 7, 'basecolor': (0,0,255)}),
-    ('violet',   {'offset': 2, 'length': 8, 'basecolor': (50,50,255)})
+    ('violet',   {'offset': 2, 'length': 3, 'is_reverse': False, 'basecolor': (100,50,255)}),
+    ('blue',     {'offset': 2, 'length': 4, 'is_reverse': True, 'basecolor': (0,0,255)}),
+    ('green',    {'offset': 2, 'length': 3, 'is_reverse': False, 'basecolor': (0,255,0)}),
+    ('yellow',   {'offset': 2, 'length': 5, 'is_reverse': True, 'basecolor': (10,155,0)}),
+    ('orange',   {'offset': 2, 'length': 4, 'is_reverse': False, 'basecolor': (128,128,0)}),
+    ('red',      {'offset': 2, 'length': 3, 'is_reverse': True, 'basecolor': (255,0,0)}),    
 ]
                     
 
@@ -32,7 +32,7 @@ class Rainbow(object):
         start_idx = 0
         for name, parts_dict in RAINBOW_PARTS:
             start_idx += parts_dict['offset']
-            part = Part(name, start_idx, parts_dict['length'], parts_dict['basecolor'])
+            part = Part(name, start_idx, parts_dict['length'], parts_dict['is_reverse'], parts_dict['basecolor'])
             start_idx += parts_dict['length']
             
             self._parts.append(part)
@@ -65,17 +65,22 @@ class Rainbow(object):
             
 
 class Part(object):
-    def __init__(self, name, start_idx, length, base_rgb):
+    def __init__(self, name, start_idx, length, is_reverse, base_rgb):
         self._name = name
         self._start_idx = start_idx
         self._length = length
+        self._is_reverse = is_reverse
         self._base_rgb = base_rgb
         self._leds_rgb = [base_rgb] * length
 
     def render(self, strip):
         start = self._start_idx
         end = start + self._length
-        strip.setPixelColor(slice(start,end), map(lambda  rgb: Color(*rgb), self._leds_rgb))
+        if self._is_reverse:
+            strip.setPixelColor(slice(start,end), map(lambda rgb: Color(*rgb), self._leds_rgb.reverse()))
+        else:
+            strip.setPixelColor(slice(start,end), map(lambda rgb: Color(*rgb), self._leds_rgb))
+
 
     def set_uniform_color(self, rgb = None):
         rgb = self._base_rgb  if rgb is None else rgb
@@ -98,6 +103,8 @@ if __name__ == '__main__':
     rainbow.render_parts()
     time.sleep(1)
 
+    rainbow.colorwipe()
+    rainbow.reset()
     rainbow.colorwipe()
 
 
