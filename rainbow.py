@@ -4,6 +4,7 @@
 # Direct port of the Arduino NeoPixel library strandtest example.  Showcases
 # various animations on a strip of NeoPixels.
 import time
+import random
 
 from rpi_ws281x.python.neopixel import Color, Adafruit_NeoPixel
 from collections import OrderedDict
@@ -23,6 +24,8 @@ RAINBOW_PARTS  =  [
     ('orange',   {'offset': 2, 'length': 8, 'is_reverse': False, 'basecolor': (128,128,0)}),
     ('red',      {'offset': 2, 'length': 7, 'is_reverse': True, 'basecolor': (255,0,0)}),    
 ]
+
+
                     
 
 class Rainbow(object):
@@ -39,6 +42,7 @@ class Rainbow(object):
 
         self._strip = Adafruit_NeoPixel(start_idx, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
         self._strip.begin()
+        self._anim_data = {}
 
     def render_parts(self):
         for part in self._parts:
@@ -46,20 +50,51 @@ class Rainbow(object):
            
         self._strip.show()
 
-    def reset(self):
+    WAIT_MS = 50
+    def animation(self, anim_func, reset_rgb, duration_ms=2000):
+        self._anim_data = {}
         for part in self._parts:
-            part.set_uniform_color((0,0,0))
+            part.set_uniform_color(reset_rgb)
+            part._anim_data = {}
 
-    def colorwipe(self):
-        duration_ms = 2000
-        wait_ms = 50
-        nb_steps = int(duration_ms/wait_ms)
+        nb_steps = int(duration_ms/WAIT_MS)
         for step in range(nb_steps):
-            for part in self._parts:
-                pixel = int(step * part._length / nb_steps)
-                part.set_pixel_color(pixel)
+            for part_idx, part in enumerate(self._parts):
+                anim_func(part, part_idx, step, nb_steps)
+
             self.render_parts()
-            time.sleep(wait_ms/1000.0)
+            time.sleep(WAIT_MS/1000.0)
+
+    def a_colorwipe(part, part_idx, step, nb_steps): 
+        pixel_idx = int(step * part._length / nb_steps)
+        part.set_pixel_color(pixel_idx)
+            
+
+    def a_commet(part, part_idx, step, nb_steps):
+        if len(part._anim_data == 0):
+            start_pixel = random.randint(int(0.1*part._length), int(0.9*part._length))
+            part._anim_data = {'left_pix': start_pixel, 'right_pix': start_pixel}
+            part.set_pixel_color(start_pixel, (200,200,200))
+        else:
+            left_pix = part._anim_data['left_pix']
+            right_pix = part._anim_data['right_pix']
+            part.set_pixel_color(left_pix)
+            part.set_pixel_color(right_pix)
+            is_done = True
+            if left_pix > 0:
+                left_pix -= 1
+                part.set_pixel_color(left_pix, (250,250,250))
+                part._anim_data['left_pix'] = left_pix
+                is_done = False
+            if right_pix < part._length-1:
+                right_pix += 1
+                part.set_pixel_color(right_pix, (250,250,250))
+                part._anim_data['right_pix'] = right_pix
+                is_done = False
+
+            if is_done:
+                part._anim_data = {}
+
 
 
             
@@ -72,6 +107,7 @@ class Part(object):
         self._is_reverse = is_reverse
         self._base_rgb = base_rgb
         self._leds_rgb = [base_rgb] * length
+        self._anim_data = {}
 
     def render(self, strip):
         start = self._start_idx
@@ -99,12 +135,7 @@ if __name__ == '__main__':
     rainbow.render_parts()
     time.sleep(1)
 
-    rainbow.reset()
-    rainbow.render_parts()
-    time.sleep(1)
-
-    rainbow.colorwipe()
-    rainbow.reset()
-    rainbow.colorwipe()
+    rainbow.animation(a_colorwipe, (0,0,0))
+    rainbow.animation(a_commet, None)
 
 
