@@ -10,6 +10,21 @@ from rpi_ws281x.python.neopixel import Color, Adafruit_NeoPixel
 from collections import OrderedDict
 
 
+def wheel(pos):
+    """Generate rainbow colors across 0-255 positions."""
+    if pos < 85:
+        return (pos * 3, 255 - pos * 3, 0)
+    elif pos < 170:
+        pos -= 85
+        return (255 - pos * 3, 0, pos * 3)
+    else:
+        pos -= 170
+        return (0, pos * 3, 255 - pos * 3)
+
+RAINBOW_RGB = map(wheel, range(256))
+
+
+" PARTS INITIALIZATION "
 # LED strip configuration:
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -17,19 +32,18 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 80     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
-    ('violet',   {'offset': 2, 'length': 20, 'is_reverse': False, 'base_rgb': (100,50,255)}),
-    ('blue',     {'offset': 2, 'length': 20, 'is_reverse': True,  'base_rgb': (0,0,255)}),
-    ('green',    {'offset': 2, 'length': 7,  'is_reverse': False, 'base_rgb': (0,255,0)}),
-    ('yellow',   {'offset': 2, 'length': 10, 'is_reverse': True,  'base_rgb': (10,155,0)}),
-    ('orange',   {'offset': 2, 'length': 8,  'is_reverse': False, 'base_rgb': (128,128,0)}),
-    ('red',      {'offset': 2, 'length': 7,  'is_reverse': True,  'base_rgb': (255,0,0)}),    
+    ('violet',  {'offset': 2, 'length': 20, 'is_reverse': False, 'base_rgb': RAINBOW_RGB[234]}),
+    ('blue',    {'offset': 2, 'length': 20, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[191]}),
+    ('green',   {'offset': 2, 'length': 7,  'is_reverse': False, 'base_rgb': RAINBOW_RGB[149]}),
+    ('yellow',  {'offset': 2, 'length': 10, 'is_reverse': True,  'base_rgb': RAINBOW_RGB[106]}),
+    ('orange',  {'offset': 2, 'length': 8,  'is_reverse': False, 'base_rgb': RAINBOW_RGB[64]}),
+    ('red',     {'offset': 2, 'length': 7,  'is_reverse': True,  'base_rgb': RAINBOW_RGB[21]}),    
 ]
 
+" SPEED PARAMETERS "
 WAIT_MS = 50
 SPEED_MS = 200
-
 NORMAL_STEP_PERIOD = int(round(SPEED_MS/WAIT_MS))
-
 MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
 NB_PARTS =len(RAINBOW_PARTS)
 CYCLE_NB_STEPS = MAX_PART_LEN*NORMAL_STEP_PERIOD
@@ -92,6 +106,13 @@ class Rainbow(object):
         else:
             part.set_uniform_color((0,0,0))
 
+    def a_gradients(self, part, step):
+        RAINBOW_LEN = len(RAINBOW_RGB)
+        start_idx = step % RAINBOW_LEN
+        leds_rgb = [RAINBOW_RGB[int(start_idx + (led_idx/part._length)*RAINBOW_LEN)] for led_idx in range(part._length)]
+        part.set_leds_rgb(leds_rgb)
+       
+
     def a_commet(self, part, step):
         if step % NORMAL_STEP_PERIOD != 0: 
             return
@@ -119,7 +140,6 @@ class Rainbow(object):
 
             if is_done:
                 part._anim_data = {}
-
 
 
 
@@ -151,6 +171,10 @@ class Part(object):
         rgb = self._base_rgb  if rgb is None else rgb
         self._leds_rgb[pixel] = rgb
 
+    def set_leds_rgb(self, leds_rgb):
+        assert len(leds_rgb) == self._length
+        self._leds_rgb = leds_rgb
+
 
 
 
@@ -160,6 +184,7 @@ if __name__ == '__main__':
     rainbow.render_parts()
     time.sleep(1)
 
+    rainbow.animation(rainbow.a_gradients, (0,0,0), 4)
     rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
     rainbow.animation(rainbow.a_commet, None, 5)
     rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
