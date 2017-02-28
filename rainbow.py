@@ -158,9 +158,9 @@ class Part(object):
         step = 1 if not self._is_double_dense \
                 else 2
         if self._is_reverse:
-            strip.setPixelColor(slice(start,end, step), map(lambda rgb: Color(*rgb), reversed(self._leds_rgb)))
+            strip.setPixelColor(slice(start,end,step), map(lambda rgb: Color(*rgb), reversed(self._leds_rgb)))
         else:
-            strip.setPixelColor(slice(start,end, step), map(lambda rgb: Color(*rgb), self._leds_rgb))
+            strip.setPixelColor(slice(start,end,step), map(lambda rgb: Color(*rgb), self._leds_rgb))
 
 
     def set_uniform_color(self, rgb = None):
