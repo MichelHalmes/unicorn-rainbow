@@ -5,12 +5,16 @@ from rpi_ws281x.python.neopixel import Color, Adafruit_NeoPixel
 from collections import OrderedDict
 
 
-from math import cos, pi
+# from math import cos, pi
+# def wheel(deg):
+#     red   = cos(deg      *pi/180) * 127 + 128
+#     green = cos((deg+120)*pi/180) * 127 + 128
+#     blue  = cos((deg+240)*pi/180) * 127 + 128
+#     return (int(red), int(green), int(blue))
+
+import colorsys
 def wheel(deg):
-    red   = cos(deg      *pi/180) * 127 + 128
-    green = cos((deg+120)*pi/180) * 127 + 128
-    blue  = cos((deg+240)*pi/180) * 127 + 128
-    return (int(red), int(green), int(blue))
+    return (int(255*c) for c in colorsys.hsv_to_rgb(deg, 1, 1)) 
 
 
 RAINBOW_RGB = map(wheel, range(360))
