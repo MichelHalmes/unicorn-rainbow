@@ -1,8 +1,3 @@
-# NeoPixel library strandtest example
-# Author: Tony DiCola (tony@tonydicola.com)
-#
-# Direct port of the Arduino NeoPixel library strandtest example.  Showcases
-# various animations on a strip of NeoPixels.
 import time
 import random
 
@@ -23,7 +18,7 @@ RAINBOW_RGB = map(wheel, range(360))
 
 " PARTS INITIALIZATION "
 # LED strip configuration:
-LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
+LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM! => 13 or 18).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 155     # Set to 0 for darkest and 255 for brightest
@@ -40,16 +35,15 @@ RAINBOW_PARTS  =  [
 " SPEED PARAMETERS "
 WAIT_MS = 50
 SPEED_MS = 200
-NORMAL_STEP_PERIOD = int(round(SPEED_MS/WAIT_MS))
+# Convention for the period (in number of animation-steps) at which animations can introduce "big" changes
+# (to avoid the animations being confused with uncontrolled flickering...)
+NORMAL_NB_STEPS_PER_STABLE_PERIOD = int(round(SPEED_MS/WAIT_MS))
 MAX_PART_LEN = max(map(lambda tup: tup[1]['length'], RAINBOW_PARTS))
 NB_PARTS =len(RAINBOW_PARTS)
-CYCLE_NB_STEPS = MAX_PART_LEN*NORMAL_STEP_PERIOD
-
-
+NORMAL_NB_STEPS_PER_CYCLE = MAX_PART_LEN*NORMAL_NB_STEPS_PER_STABLE_PERIOD
 
 class Rainbow(object):
     def __init__(self):
-
         self._parts = []
         start_idx = 0
         part_idx = 0
@@ -63,7 +57,6 @@ class Rainbow(object):
 
         self._strip = Adafruit_NeoPixel(start_idx, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
         self._strip.begin()
-        self._anim_data = {}
 
     def render_parts(self):
         for part in self._parts:
@@ -72,72 +65,17 @@ class Rainbow(object):
         self._strip.show()
 
 
-    def animation(self, anim_func, reset_rgb, nb_cycles=3):
-        self._anim_data = {}
+    def run_animation(self, animation):
         for part in self._parts:
-            part.set_uniform_color(reset_rgb)
+            part.set_uniform_color(animation.RESET_RGB)
             part._anim_data = {}
 
-        for step in range(nb_cycles*CYCLE_NB_STEPS):
+        for step_cnt in range(animation.get_nb_steps()):
             for part in self._parts:
-                anim_func(part, step)
+                animation.run_step(part, step_cnt)
 
             self.render_parts()
             time.sleep(WAIT_MS/1000.0)
-
-    def a_colorwipe(self, part, step):
-        pixel_idx = int(step * part._length / CYCLE_NB_STEPS) % part._length
-        if pixel_idx == 0:
-            part.set_uniform_color((0,0,0))
-
-        part.set_pixel_color(pixel_idx)
-
-    def a_flashparts(self, part, step):
-        if step % NORMAL_STEP_PERIOD != 0:
-            return
-
-        periods = step/NORMAL_STEP_PERIOD
-
-        if (periods+part._part_idx) % 2 == 0:
-            part.set_uniform_color()
-        else:
-            part.set_uniform_color((0,0,0))
-
-    def a_gradients(self, part, step):
-        RAINBOW_LEN = len(RAINBOW_RGB)
-        start_idx = step % RAINBOW_LEN
-        leds_rgb = [RAINBOW_RGB[int(start_idx + (led_idx*RAINBOW_LEN/part._length))%RAINBOW_LEN] for led_idx in range(part._length)]
-        part.set_leds_rgb(leds_rgb)
-
-
-    def a_commet(self, part, step):
-        if step % NORMAL_STEP_PERIOD != 0:
-            return
-
-        if len(part._anim_data) == 0:
-            start_pixel = random.randint(int(0.2*part._length), int(0.8*part._length))
-            part._anim_data = {'left_pix': start_pixel, 'right_pix': start_pixel}
-            part.set_pixel_color(start_pixel, (200,200,200))
-        else:
-            left_pix = part._anim_data['left_pix']
-            right_pix = part._anim_data['right_pix']
-            part.set_pixel_color(left_pix)
-            part.set_pixel_color(right_pix)
-            is_done = True
-            if left_pix > 0:
-                left_pix -= 1
-                part.set_pixel_color(left_pix, (250,250,250))
-                part._anim_data['left_pix'] = left_pix
-                is_done = False
-            if right_pix < part._length-1:
-                right_pix += 1
-                part.set_pixel_color(right_pix, (250,250,250))
-                part._anim_data['right_pix'] = right_pix
-                is_done = False
-
-            if is_done:
-                part._anim_data = {}
-
 
 
 class Part(object):
@@ -178,13 +116,20 @@ class Part(object):
 
 
 
-# Main program logic follows:
-if __name__ == '__main__':
-    rainbow = Rainbow()
-    rainbow.render_parts()
-    time.sleep(100)
+class Animation(object):
+    NORMAL_NB_STEPS_PER_CYCLE = NORMAL_NB_STEPS_PER_CYCLE
+    NORMAL_NB_STEPS_PER_STABLE_PERIOD = NORMAL_NB_STEPS_PER_STABLE_PERIOD
+    RAINBOW_RGB = RAINBOW_RGB
 
-    rainbow.animation(rainbow.a_gradients, (0,0,0), 4)
-    rainbow.animation(rainbow.a_colorwipe, (0,0,0), 3)
-    rainbow.animation(rainbow.a_commet, None, 5)
-    rainbow.animation(rainbow.a_flashparts, (0,0,0), 5)
+    RESET_RGB = "Define in BaseClass"
+    NB_CYCLES_PER_ANIMATION = "Define in BaseClass"
+
+    def __init__(self, speed, duration):
+        self._speed = speed
+        self._duration = duration
+
+    def get_nb_steps(self):
+        return self._duration * self.NB_CYCLES_PER_ANIMATION * self.NORMAL_NB_STEPS_PER_CYCLE
+
+    def run_step(self, part, step_cnt):
+        raise NotImplementedError('')

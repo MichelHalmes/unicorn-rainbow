@@ -5,3 +5,5 @@ newtest
 *.o
 *.a
 *.swp
+
+.com.apple.timemachine.supported
