@@ -6,5 +6,4 @@ newtest
 *.a
 *.swp
 
-.com.apple.timemachine.supported
 *.DS_Store
