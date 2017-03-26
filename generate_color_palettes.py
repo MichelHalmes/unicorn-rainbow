@@ -2,6 +2,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import json
+import colorsys
 
 NB_VALUES = 255
 COLOR_MAPS = [  
