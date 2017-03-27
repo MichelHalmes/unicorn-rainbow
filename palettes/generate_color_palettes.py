@@ -16,7 +16,7 @@ COLOR_MAPS = [
     ('gnuplot', (7, 0)),
     # ('gnuplot2', None),
     # ('gist_ncar', None),
-    ('nipy_spectral', (8, 10)),
+    ('nipy_spectral', (10, 10)),
     ('jet', None),
     # ('rainbow', None),
     ('gist_rainbow', None),
