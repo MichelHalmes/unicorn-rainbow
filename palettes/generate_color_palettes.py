@@ -13,7 +13,7 @@ COLOR_MAPS = [
     ('brg', None),
     # ('CMRmap', None),
     # ('cubehelix', None),
-    ('gnuplot', (3, 0)),
+    ('gnuplot', (7, 0)),
     # ('gnuplot2', None),
     # ('gist_ncar', None),
     ('nipy_spectral', (3, 10)),
@@ -41,11 +41,10 @@ for cmap_name, truncate in COLOR_MAPS:
     color_palettes[cmap_name] = palette
 
 def mich_rainbow(deg):
-    rgb = colorsys.hsv_to_rgb((deg/360.0)**2, 1, 1)
+    rgb = colorsys.hsv_to_rgb((1.*deg/NB_VALUES)**2, 1, 1)
     return tuple(int(255*c/sum(rgb)) for c in rgb)
-color_palettes['mich_rainbow'] = map(mich_rainbow, range(NB_VALUES))
+color_palettes['gnuplot'] = map(mich_rainbow, range(NB_VALUES))
 
-print color_palettes['nipy_spectral']
 
 with open('./palettes/color_palettes.json', 'w') as fp:
     json.dump(color_palettes, fp)
