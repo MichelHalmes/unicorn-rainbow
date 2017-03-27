@@ -38,7 +38,7 @@ for cmap_name, truncate in COLOR_MAPS:
     palette = map(val_to_rgb, range(NB_VALUES))
     if truncate:
         palette = palette[truncate[0]: -truncate[1]]
-    color_palettes[cmap_name] = 
+    color_palettes[cmap_name] = palette
 
 def mich_rainbow(deg):
     rgb = colorsys.hsv_to_rgb((deg/360.0)**2, 1, 1)
