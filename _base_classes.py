@@ -15,7 +15,7 @@ def hsv_deg_to_rgb(deg):
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM! => 13 or 18).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
-LED_BRIGHTNESS = 60     # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 50     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 RAINBOW_PARTS  =  [
     ('violet',  {'offset': 0, 'length': 37, 'is_reverse': False, 'base_rgb': hsv_deg_to_rgb(300) }),

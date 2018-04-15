@@ -19,9 +19,9 @@ ANIMATIONS = [
 if __name__ == '__main__':
     rainbow = Rainbow()
 
-    TextBanner(rainbow).run_animation()
-
-
+    Surface2D(rainbow).run_animation()
+    TextBanner(rainbow, message="@GBU@").run_animation()
+    Gradients(rainbow).run_animation()
 
     TOTAL_VARIETY = sum([anim.VARIETY for anim in ANIMATIONS])
     
@@ -32,7 +32,7 @@ if __name__ == '__main__':
             cum_proba+= (1.*anim.VARIETY/TOTAL_VARIETY)
             if cum_proba >= treshold_proba:
                 break
-        print anim.__name__
+        print ">>", anim.__name__
         anim(rainbow).run_animation()
         
         

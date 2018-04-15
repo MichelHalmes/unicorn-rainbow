@@ -7,14 +7,14 @@ PIX_PER_CHAR = 8
 class TextBanner(Animation):
     RESET_RGB = None
     NB_CYCLES_PER_ANIMATION = 10
-    VARIETY = 5
+    VARIETY = 3
 
 
-    def __init__(self, rainbow):
+    def __init__(self, rainbow, message=None):
         super(self.__class__, self).__init__(rainbow)
         self._cnst_angular_speed = False
         
-        message = MESSAGES[-1] #random.choice(MESSAGES)
+        message = message or random.choice(MESSAGES)
 
         for part in self.get_parts():
             self.get_data(part)['string'] = '-'*self.MAX_PART_LEN
@@ -27,8 +27,6 @@ class TextBanner(Animation):
                 assert len(string)==PIX_PER_CHAR or char in ' !?-'
                 self.get_data(part)['string']+= string + '----'
 
-        # for part in self.get_parts():
-        #     self.get_data(part)['string'] += '-'*self.MAX_PART_LEN
 
     def run_period(self, part, period_cnt):
         part.set_uniform_color((0,0,0))
@@ -48,25 +46,25 @@ class TextBanner(Animation):
 
 
 MESSAGES = [
-"@EMELINE@!",
+"@GBU@",
 "AWEEE!!",
-"Play!",
-"AB 2017!",
+# "Play!",
+"AB 2018!",
 "AFRIKABURN",
 "RADICAL INCLUSION!",
 "GIFTING!",
-"DECOMMODIFICATION!",
-"RADICAL SELF-RELIANCE!",
-"RADICAL SELF-EXPRESSION!",
+# "DECOMMODIFICATION!",
+# "RADICAL SELF-RELIANCE!",
+# "RADICAL SELF-EXPRESSION!",
 "COMMUNAL EFFORT!",
-"CIVIC RESPONSIBILITY!",
+# "CIVIC RESPONSIBILITY!",
 "LEAVE NO TRACE!",
 "PARTICIPATION!",
 "IMMEDIACY!",
 "EACH 1 TEACH 1!",
 "GRATITUDE!",
 "NO MOOP!",
-"&Hi!&"
+"&&Hi!&&"
 ]
 
 CHARACTERS = {
